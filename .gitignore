@@ -1,0 +1,6 @@
+.dotfiles
+.git/*
+*.elc
+auto-save-list
+session.*
+.session
