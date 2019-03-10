@@ -1,10 +1,7 @@
 options("digits.secs"=3)            # show sub-second time stamps
 options(max.print=1000)             # don't kill emacs by printing big data.frames
 
-r <- getOption("repos")             # hard code the US repo for CRAN
-r["CRAN"] <- "https://cloud.r-project.org"
-options(repos = r)
-rm(r)
+local({r <- getOption("repos");r["CRAN"] <- "https://cloud.r-project.org";options(repos = r)})
 
 exit <- function() { q("no") }
 
@@ -97,4 +94,31 @@ r.autoyas.create <- function(funname) {
   str <- paste("(",str,")", sep="")
   return(str)
 }
+
+.backup_packages <- function(filename = "~/backup/packages/installed_packages.rda"){
+  packages <- installed.packages()[, "Package"]
+  save(packages, file = filename)
+}
+
+.restore_packages <- function(filename = "~/backup/packages/installed_packages.rda"){
+  load(filename)
+  installed <- packages %in% installed.packages()[, "Package"]
+  if (length(packages[!installed]) >= 1){
+    install.packages(packages[!installed])
+  }
+}
+
+#if (interactive()) {
+#  suppressMessages(require(usethis))
+#}
+
+options(
+  devtools.name = "Diego Valle-Jones",
+  devtools.desc.author = 'person("Diego", "Valle-Jones", email = "diego@diegovalle.net", role = c("aut", "cre"))',
+  devtools.desc.license = "MIT + file LICENSE"
+)
+
+
+.libPaths("/home/diego/R/rpackages")
+#message("Using library: ", .libPaths()[1])
 
