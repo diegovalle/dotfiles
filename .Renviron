@@ -1,0 +1,4 @@
+# Move secrets to .Rsecrets and load it from .Rprofile
+# Sys.setenv(APIID = "secret")
+
+# R_LIBS_SITE_USER=~/R/packages # For Ubuntu, R_LIBS_SITE for others
