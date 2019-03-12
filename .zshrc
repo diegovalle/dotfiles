@@ -156,7 +156,7 @@ diceware () {
     NUMWORDS=$1
   fi
   echo Your password has $(($NUMWORDS * 12.9)) bits of entropy
-  shuf --random-source=/dev/urandom ~/Documents/eff_large_wordlist.txt | \
+  shuf --random-source=/dev/urandom ~/.eff_large_wordlist.txt | \
        head -n$NUMWORDS | \
        awk -F" " '{printf "%s",$2} END {print ""}' | \
        sed 's/$//'
@@ -170,7 +170,7 @@ diceware_short () {
     NUMWORDS=$1
   fi
   echo Your password has $(($NUMWORDS * 10.3)) bits of entropy
-  shuf --random-source=/dev/urandom ~/Documents/eff_small_wordlist_1.txt | \
+  shuf --random-source=/dev/urandom ~/.eff_small_wordlist.txt | \
        head -n$NUMWORDS | \
        awk -F" " '{printf "%s",$2} END {print ""}'| \
        sed 's/$//'
