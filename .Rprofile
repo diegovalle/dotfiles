@@ -1,11 +1,15 @@
-options("digits.secs"=3)            # show sub-second time stamps
-options(max.print=1000)             # don't kill emacs by printing big data.frames
+options("digits.secs"=3) # show sub-second time stamps
+options(max.print=1000)  # don't kill emacs by printing big data.frames
 
-local({r <- getOption("repos");r["CRAN"] <- "https://cloud.r-project.org";options(repos = r)})
+local({
+    r <- getOption("repos")
+    r["CRAN"] <- "https://cloud.r-project.org"
+    options(repos = r)
+})
 
 exit <- function() { q("no") }
 
-##http://jeromyanglim.tumblr.com/post/33825729070/function-to-view-r-data-frame-in-spreadsheet
+## http://jeromyanglim.tumblr.com/post/33825729070/function-to-view-r-data-frame-in-spreadsheet
 view <- function(data, autofilter=TRUE, open_command='xdg-open') {
     # data: data frame
     # autofilter: whether to apply a filter to make sorting and filtering easier
@@ -13,13 +17,13 @@ view <- function(data, autofilter=TRUE, open_command='xdg-open') {
     #     on Ubuntu this `xdg-open` works
     #     on other platforms, perhaps `open`
     #     or the command name for the spreadsheet softare might work
-    ##require(XLConnect)
+    # require(XLConnect)
     temp_file <- paste0(tempfile(), '.csv')
-    ##wb <- loadWorkbook(temp_file, create = TRUE)
-    ##createSheet(wb, name = "temp")
-    ##writeWorksheet(wb, data, sheet = "temp", startRow = 1, startCol = 1)
-    ##if (autofilter) setAutoFilter(wb, 'temp', aref('A1', dim(data)))
-    ##saveWorkbook(wb, )
+    ## wb <- loadWorkbook(temp_file, create = TRUE)
+    ## createSheet(wb, name = "temp")
+    ## writeWorksheet(wb, data, sheet = "temp", startRow = 1, startCol = 1)
+    ## if (autofilter) setAutoFilter(wb, 'temp', aref('A1', dim(data)))
+    ## saveWorkbook(wb, )
     write.csv(data, temp_file, row.names = FALSE)
     system(paste(open_command, temp_file))
 }
@@ -27,7 +31,7 @@ view <- function(data, autofilter=TRUE, open_command='xdg-open') {
 #http://stackoverflow.com/questions/1358003/tricks-to-manage-the-available-memory-in-an-r-session
 # improved list of objects
 .ls.objects <- function (pos = 1, pattern, order.by,
-                        decreasing=FALSE, head=FALSE, n=5) {
+                        decreasing = FALSE, head = FALSE, n = 5) {
     napply <- function(names, fn) sapply(names, function(x)
                                          fn(get(x, pos = pos)))
     names <- ls(pos = pos, pattern = pattern)
@@ -47,6 +51,19 @@ view <- function(data, autofilter=TRUE, open_command='xdg-open') {
         out <- head(out, n)
     out
 }
+
+# Load secret variables that we don't want in Renviron.
+if (file.exists("~/.Rsecrets")) {
+    source("~/.Rsecrets")
+} else {
+    cat(
+        "Failed to detect `~/.Rsecrets` file.",
+        "",
+        sep = "\n"
+    )
+}
+
+
 # shorthand
 lsos <- function(..., n=10) {
     .ls.objects(..., order.by="Size", decreasing=TRUE, head=TRUE, n=n)
@@ -108,17 +125,25 @@ r.autoyas.create <- function(funname) {
   }
 }
 
-#if (interactive()) {
-#  suppressMessages(require(usethis))
-#}
+# if (interactive()) {
+#   suppressMessages(require(usethis))
+# }
 
 options(
   devtools.name = "Diego Valle-Jones",
-  devtools.desc.author = 'person("Diego", "Valle-Jones", email = "diego@diegovalle.net", role = c("aut", "cre"))',
+  devtools.desc.author = 'person("Diego", "Valle-Jones", email = "diego [at] diegovalle.net", role = c("aut", "cre"))',
   devtools.desc.license = "MIT + file LICENSE"
 )
 
+## .libPaths("/home/diego/R/rpackages")
+## message("Using library: ", .libPaths()[1])
 
-.libPaths("/home/diego/R/rpackages")
-#message("Using library: ", .libPaths()[1])
-
+cat(
+    "Library Path:",
+    Sys.getenv("R_LIBS_SITE_USER"),
+    "",
+    "Working Directory:",
+    normalizePath(getwd()),
+    "",
+    sep = "\n"
+)

@@ -4,6 +4,11 @@
 
 - Git
 - Curl
+- Wget
+- Emacs
+- Oh-my-zsh
+- Powerline9k
+
 
 ## Install
 
@@ -14,19 +19,27 @@ dotfiles == git alias
 
 git clone --recursive https://github.com/diegovalle/dotfiles.git
 
-```sh
-git clone --bare https://bitbucket.org/durdn/cfg.git $HOME/.dotfiles
-function config {
-   /usr/bin/git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME $@
+```bashsh
+#!/bin/bash
+
+git clone --recurse-submodules --bare \
+    https://github.com/diegovalle/dotfiles.git "$HOME"/.dotfiles
+dotfiles() {
+   git --git-dir="$HOME"/.dotfiles/ --work-tree="$HOME" "$@"
 }
-mkdir -p .config-backup
-dfl checkout
-if [ $? = 0 ]; then
-  echo "Checked out config.";
+
+if dotfiles checkout; then
+    echo "Cloned dotfiles"
+    # Need to chekout emacs submodule
+    ( cd .emacs.d && dotfiles submodule update --init --recursive )
   else
     echo "Backing up pre-existing dot files.";
-    config checkout 2>&1 | egrep "\s+\." | awk {'print $1'} | xargs -I{} mv {} .config-backup/{}
+    mkdir -p .dotfiles-backup
+    dotfiles checkout 2>&1 | grep -E "^\s+" | awk '{print $1}' | \
+             xargs -I{} mv {} .dotfiles-backup/{}
+    dotfiles checkout
+    ( cd .emacs.d && dotfiles submodule update --init --recursive )
 fi;
-dfl checkout
-dfl config status.showUntrackedFiles no
+
+dotfiles config status.showUntrackedFiles no
 ```
