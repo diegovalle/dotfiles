@@ -9,6 +9,9 @@ ZSH=$HOME/.oh-my-zsh
 # Optionally, if you set this to "random", it'll load a random theme each
 # time that oh-my-zsh is loaded.
 ZSH_THEME="powerlevel9k/powerlevel9k"
+
+COMPLETION_WAITING_DOTS="true"
+
 # Only show two dir levels in the prompt
 POWERLEVEL9K_SHORTEN_DIR_LENGTH=4
 POWERLEVEL9K_PROMPT_ON_NEWLINE=true
@@ -25,24 +28,21 @@ POWERLEVEL9K_DIR_WRITABLE_FORBIDDEN_BACKGROUND='magenta'
 # Which plugins would you like to load? (plugins can be found in ~/.oh-my-zsh/plugins/*)
 # Custom plugins may be added to ~/.oh-my-zsh/custom/plugins/
 # Example format: plugins=(rails git textmate ruby lighthouse)
-plugins=(git pep8 git-flow pylint python zsh-syntax-highlighting)
+plugins=(git)
 
-source $ZSH/oh-my-zsh.sh
+source "$ZSH"/oh-my-zsh.sh
 
 # Who doesn't want home and end to work?
 bindkey '\e[1~' beginning-of-line
 bindkey '\e[4~' end-of-line
 
+## If you're crazy enough to not update oh-my-zsh
 #DISABLE_UPDATE_PROMPT=true
-
-# virtualenv
-source /usr/local/bin/virtualenvwrapper.sh
 
 # Example aliases
 # alias zshconfig="mate ~/.zshrc"
 # alias ohmyzsh="mate ~/.oh-my-zsh"
 alias mdd='mkdir $(date -I)'
-
 
 # virtualenv aliases
 # http://blog.doughellmann.com/2010/01/virtualenvwrapper-tips-and-tricks.html
@@ -95,10 +95,14 @@ alias untarxz='tar -xJf'
 #alias ls='ls -X -h --group-directories-first --color'
 alias grep='grep --color=auto'
 
-alias youtube-dl='youtube-dl --write-sub --sub-lang en --convert-subs srt '
-alias dfl='/usr/bin/git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME'
+#alias ydl="youtube-dl --write-sub --sub-lang en --convert-subs srt"
 
 alias dotfiles='/usr/bin/git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME'
+
+y() {
+    youtube-dl --write-sub --sub-lang en --convert-subs srt "$1"
+    history -d $((HISTCMD-1))
+}
 
 ### Extra ZSH options ###
 # If querying the user before executing `rm *' or `rm
@@ -108,7 +112,9 @@ alias dotfiles='/usr/bin/git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME'
 # it.
 setopt RM_STAR_WAIT
 
+# Commands prefaced by a space aren't saved to .zsh_history
 export HISTCONTROL=ignorespace
+export HISTFILESIZE=100000
 
 # Set to this to use case-sensitive completion
 # CASE_SENSITIVE="true"
@@ -126,22 +132,33 @@ export HISTCONTROL=ignorespace
 # COMPLETION_WAITING_DOTS="true"
 
 
+
+
 # Customize to your needs...
 export GOPATH=~/go
 export PATH=/home/diego/apps:/home/diego/.local/bin:$GOPATH/bin:$PATH:/usr/local/go/bin:/home/diego/apps/google_appengine:/home/diego/bin:/usr/lib/lightdm/lightdm:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/home/diego/apps/openshift-origin-client-tools
 export PATH="$HOME/.rbenv/bin:$PATH"
 eval "$(rbenv init -)"
-[ -s "/home/diego/.nvm/nvm.sh" ] && . "/home/diego/.nvm/nvm.sh" # This loads nvm
+
+# virtualenv
+[ -f /usr/local/bin/virtualenvwrapper.sh ] && source /usr/local/bin/virtualenvwrapper.sh
+
+# This loads nvm
+[ -s "/home/diego/.nvm/nvm.sh" ] && . "/home/diego/.nvm/nvm.sh" || echo install nvm
 
 # The next line updates PATH for the Google Cloud SDK.
-[ -f /home/diego/apps/google-cloud-sdk/path.zsh.inc ] && source '/home/diego/apps/google-cloud-sdk/path.zsh.inc'
+[ -f /home/diego/apps/google-cloud-sdk/path.zsh.inc ] && source '/home/diego/apps/google-cloud-sdk/path.zsh.inc' || echo install google cloud sdk
 
 # The next line enables shell command completion for gcloud.
-[ -f /home/diego/apps/google-cloud-sdk/completion.zsh.inc ] && source '/home/diego/apps/google-cloud-sdk/completion.zsh.inc'
+[ -f /home/diego/apps/google-cloud-sdk/completion.zsh.inc ] && source '/home/diego/apps/google-cloud-sdk/completion.zsh.inc' || echo install shell for gcloud
+
+# added by travis gem
+[ -f /home/diego/.travis/travis.sh ] && source /home/diego/.travis/travis.sh || echo install travis autocomplete
+
 
 # creates a directory and cds into it
-function mkd() {
-    mkdir -p "$@" && cd "$@"
+function mkcd() {
+    mkdir -p "$1" && cd "$1" || exit
 }
 
 # lists zombie processes
@@ -150,66 +167,67 @@ function zombie() {
 }
 
 diceware () {
-  if [[ -z $1 ]] then
-    NUMWORDS=6
+  if [[ -z $1 ]]; then
+    NUMWORDS=10
   else
     NUMWORDS=$1
   fi
-  echo Your password has $(($NUMWORDS * 12.9)) bits of entropy
+  echo Your password has "$(echo "scale=1;$NUMWORDS * 12.9" | bc)" bits of entropy
   shuf --random-source=/dev/urandom ~/.eff_large_wordlist.txt | \
-       head -n$NUMWORDS | \
-       awk -F" " '{printf "%s",$2} END {print ""}' | \
-       sed 's/$//'
+       head -n"$NUMWORDS" | \
+       awk -F" " '{printf "%s.", $2} END {print ""}' | \
+       sed 's/\.$//'
 
 }
 
 diceware_short () {
-  if [[ -z $1 ]] then
-    NUMWORDS=6
+  if [[ -z $1 ]]; then
+    NUMWORDS=12
   else
     NUMWORDS=$1
   fi
-  echo Your password has $(($NUMWORDS * 10.3)) bits of entropy
+  echo Your password has "$(echo "scale=1;$NUMWORDS * 10.3" | bc)" bits of entropy
   shuf --random-source=/dev/urandom ~/.eff_small_wordlist.txt | \
-       head -n$NUMWORDS | \
-       awk -F" " '{printf "%s",$2} END {print ""}'| \
-       sed 's/$//'
+       head -n"$NUMWORDS" | \
+       awk -F" " '{printf "%s.", $2} END {print ""}'| \
+       sed 's/\.$//'
 
 }
 
 curlbench() {
-  if [[ -z $1 ]] then
+    if [[ -z $1 ]]; then
     echo "Usage: $0 http://example.com"
   fi
-  curl -w "@/home/diego/Documents/curl-format.txt" -o /dev/null -s $1
+  curl -w "@$HOME/.curl-format" -o /dev/null -s "$1"
 }
 
 ## R programming stuff
 
-#Stop R from promping to save workspace
+# Stop R from promping to save workspace
 alias R='R --no-save --no-restore-data --quiet'
 
-#R libraries in a nice place
-R_LIBS="/home/diego/R/rpackages"
-export R_LIBS
-
+# Create an R project the way I like it
 rproject() {
-  if [ -z "$@" ]; then
-    echo "forgot to specify the directory name"
+  if [ -z "$1" ]; then
+    printf "Usage: rproject dirname \n forgot to specify the directory name"
     return 0
   fi
-  if [ -d "$@" ]; then
+  if [ -d "$1" ]; then
     echo "directory already exists"
     return 0
   fi
-  mkdir -p "$@/graphs"
-  mkdir -p "$@/R"
-  mkdir -p "$@/output"
-  mkdir -p "$@/data/$(date +%Y-%m-%d)"
-  mkdir -p "$@/cache"
-  mkdir -p "$@/meta"
-  cd "$@"
-  cat >> analysis.R<<HERE
+  if [ -f "$1" ]; then
+      echo "there's already a file with that name"
+      return 0
+  fi
+  mkdir -p "$1/graphs"
+  mkdir -p "$1/R"
+  mkdir -p "$1/output"
+  mkdir -p "$1/data/$(date +%Y-%m-%d)"
+  mkdir -p "$1/cache"
+  mkdir -p "$1/meta"
+  cd "$1" || exit
+  cat >> analysis.R<<EOF
 ## This program does
 
 ## Install packages
@@ -223,23 +241,30 @@ if (length(names(.success)[!.success])) {
 options(stringsAsFactors = FALSE)
 
 ## source("R/functions.R")
-HERE
-  touch .gitignore
+EOF
+  cat >> .gitignore<<EOF
+# RStudio files
+.Rproj.user/
+# Don't store intermediate files
+cache/*
+EOF
   touch README.md
-  printf "Version: 1.0\n" > "$@".Rproj
-  printf "\n" >> "$@".Rproj
-  printf "RestoreWorkspace: Default\n" >> "$@".Rproj
-  printf "SaveWorkspace: Default\n" >> "$@".Rproj
-  printf "AlwaysSaveHistory: Default\n" >> "$@".Rproj
-  printf "\n" >> "$@".Rproj
-  printf "EnableCodeIndexing: Yes\n" >> "$@".Rproj
-  printf "UseSpacesForTab: Yes\n" >> "$@".Rproj
-  printf "NumSpacesForTab: 2\n" >> "$@".Rproj
-  printf "Encoding: UTF-8\n" >> "$@".Rproj
-  printf "\n" >> "$@".Rproj
-  printf "RnwWeave: Sweave\n" >> "$@".Rproj
-  printf "LaTeX: pdfLaTeX\n" >> "$@".Rproj
-  return 1
+  {
+  printf "Version: 1.0\n"
+  printf "\n"
+  printf "RestoreWorkspace: Default\n"
+  printf "SaveWorkspace: Default\n"
+  printf "AlwaysSaveHistory: Default\n"
+  printf "\n"
+  printf "EnableCodeIndexing: Yes\n"
+  printf "UseSpacesForTab: Yes\n"
+  printf "NumSpacesForTab: 2\n"
+  printf "Encoding: UTF-8\n"
+  printf "\n"
+  printf "RnwWeave: Sweave\n"
+  printf "LaTeX: pdfLaTeX\n"
+  } > "$*".Rproj
+  return 0
 }
 
 # To change the R package directory uncomment
@@ -250,5 +275,5 @@ cd () {
   echo "$OLDPWD -> $PWD"
 }
 
-# added by travis gem
-[ -f /home/diego/.travis/travis.sh ] && source /home/diego/.travis/travis.sh
+# Store ssh key passwords
+eval "$(ssh-agent)" >/dev/null
