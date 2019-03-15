@@ -14,11 +14,6 @@
 
 Install config tracking in your $HOME by running:
 
-.dotfiles == directory to store the git database
-dotfiles == git alias
-
-git clone --recursive https://github.com/diegovalle/dotfiles.git
-
 ```bashsh
 #!/bin/bash
 
@@ -43,3 +38,6 @@ fi;
 
 dotfiles config status.showUntrackedFiles no
 ```
+
+.dotfiles == directory to store the git database
+dotfiles == git alias

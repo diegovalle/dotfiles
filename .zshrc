@@ -28,7 +28,7 @@ POWERLEVEL9K_DIR_WRITABLE_FORBIDDEN_BACKGROUND='magenta'
 # Which plugins would you like to load? (plugins can be found in ~/.oh-my-zsh/plugins/*)
 # Custom plugins may be added to ~/.oh-my-zsh/custom/plugins/
 # Example format: plugins=(rails git textmate ruby lighthouse)
-plugins=(git)
+plugins=(git virtualenv)
 
 source "$ZSH"/oh-my-zsh.sh
 
@@ -267,13 +267,34 @@ EOF
   return 0
 }
 
+
 # To change the R package directory uncomment
 #R_LIBS_SITE_USER="/home/diego/R/packages"
 
+mkbash() {
+    if [[ -z $1 ]]; then
+        echo Usage: mkbash filename.sh
+    fi
+    if [ -d "$1" ]; then
+        echo "directory already exists"
+        return 0
+    fi
+    if [ -f "$1" ]; then
+        echo "there's already a file with that name"
+        return 0
+    fi
+    cat >> "$1" <<EOF
+#!/bin/bash
+set -euo pipefail #exit on error, undefined and prevent pipeline errors
+IFS=$'\n\t'
+EOF
+}
+
+# Show to which directory we are changing into
 cd () {
   builtin cd "$@"
   echo "$OLDPWD -> $PWD"
 }
 
-# Store ssh key passwords
-eval "$(ssh-agent)" >/dev/null
+# Store ssh key passwords in ssh-agent
+# ps -p $SSH_AGENT_PID > /dev/null || eval $(ssh-agent -s)
