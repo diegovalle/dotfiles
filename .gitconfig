@@ -1,0 +1,39 @@
+[user]
+	name = diego
+	email = git@diegovalle.net
+	signingkey = 55BD9EC4CD81C252
+	
+[commit]
+	gpgSign = false
+	
+[color]
+	diff = auto
+	status = auto
+	branch = auto
+	interactive = auto
+	ui = true
+	pager = true
+	
+[core]
+	excludesfile = /home/diego/.gitignore_global
+	hooksPath = /home/diego/.githooks
+	
+[alias]
+	fixup = "!f() { TARGET=$(git rev-parse "$1"); git commit --fixup=$TARGET ${@:2} && EDITOR=true git rebase -i --autostash --autosquash $TARGET^; }; f"
+	
+[log]
+  # Better date formats in logs
+	date = rfc
+	
+[alias]
+        st = status
+        ci = commit
+	br = branch
+	co = checkout
+	df = diff
+	
+[url "git@github.com:"]
+	insteadOf = https://github.com/
+	
+[url "git@github.com:"]
+	pushInsteadOf = "https://github.com/"
