@@ -11,8 +11,8 @@
 auto-save-list
 tramp
 .\#*
-smex-items
-
+*smex-items*
+*anaconda-mode/
 
 # Org-mode
 .org-id-locations
