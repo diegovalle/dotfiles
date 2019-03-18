@@ -13,6 +13,7 @@ tramp
 .\#*
 *smex-items*
 *anaconda-mode/
+/transient/history.el*
 
 # Org-mode
 .org-id-locations
