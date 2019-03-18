@@ -3,7 +3,13 @@ DEFAULT_USER=diego
 
 # Path to your oh-my-zsh configuration.
 ZSH=$HOME/.oh-my-zsh
-
+if [ ! -d $ZSH ]; then
+    git clone git://github.com/robbyrussell/oh-my-zsh.git $ZSH
+    git clone https://github.com/bhilburn/powerlevel9k.git ~/.oh-my-zsh/custom/themes/powerlevel9k
+fi
+if [ ! -d $ZSH/custom/plugins/zsh-autosuggestions/ ]; then
+    git clone https://github.com/zsh-users/zsh-autosuggestions ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-autosuggestions
+fi
 # Set name of the theme to load.
 # Look in ~/.oh-my-zsh/themes/
 # Optionally, if you set this to "random", it'll load a random theme each
@@ -28,7 +34,7 @@ POWERLEVEL9K_DIR_WRITABLE_FORBIDDEN_BACKGROUND='magenta'
 # Which plugins would you like to load? (plugins can be found in ~/.oh-my-zsh/plugins/*)
 # Custom plugins may be added to ~/.oh-my-zsh/custom/plugins/
 # Example format: plugins=(rails git textmate ruby lighthouse)
-plugins=(git virtualenv)
+plugins=(git virtualenv zsh-autosuggestions)
 
 source "$ZSH"/oh-my-zsh.sh
 
@@ -100,8 +106,8 @@ alias grep='grep --color=auto'
 alias dotfiles='/usr/bin/git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME'
 
 y() {
-    youtube-dl --write-sub --sub-lang en --convert-subs srt "$1"
-    history -d $((HISTCMD-1))
+    youtube-dl --write-sub --sub-lang en --convert-subs srt $@
+    #history -d $((HISTCMD))
 }
 
 ### Extra ZSH options ###
@@ -138,7 +144,7 @@ export HISTFILESIZE=100000
 export GOPATH=~/go
 export PATH=/home/diego/apps:/home/diego/.local/bin:$GOPATH/bin:$PATH:/usr/local/go/bin:/home/diego/apps/google_appengine:/home/diego/bin:/usr/lib/lightdm/lightdm:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/home/diego/apps/openshift-origin-client-tools
 export PATH="$HOME/.rbenv/bin:$PATH"
-eval "$(rbenv init -)"
+#eval "$(rbenv init -)" > /dev/null
 
 # virtualenv
 [ -f /usr/local/bin/virtualenvwrapper.sh ] && source /usr/local/bin/virtualenvwrapper.sh
@@ -210,15 +216,15 @@ alias R='R --no-save --no-restore-data --quiet'
 rproject() {
   if [ -z "$1" ]; then
     printf "Usage: rproject dirname \n forgot to specify the directory name"
-    return 0
+    return 1
   fi
   if [ -d "$1" ]; then
     echo "directory already exists"
-    return 0
+    return 1
   fi
   if [ -f "$1" ]; then
       echo "there's already a file with that name"
-      return 0
+      return 1
   fi
   mkdir -p "$1/graphs"
   mkdir -p "$1/R"
@@ -277,11 +283,11 @@ mkbash() {
     fi
     if [ -d "$1" ]; then
         echo "directory already exists"
-        return 0
+        return 1
     fi
     if [ -f "$1" ]; then
         echo "there's already a file with that name"
-        return 0
+        return 1
     fi
     cat >> "$1" <<EOF
 #!/bin/bash
@@ -294,6 +300,27 @@ EOF
 cd () {
   builtin cd "$@"
   echo "$OLDPWD -> $PWD"
+}
+
+# Create a symlink to the .git/hooks directory so
+# that I can be able to store githooks in version control
+install_hook() {
+    if [[ -z $1 ]]; then
+        echo Usage: install_hook hook.sh
+    fi
+    GITDIR=$(git rev-parse --git-dir)/hooks
+    if [ ! $? -eq 0 ] ; then
+        echo "Must be run inside a git repository"
+        return 1
+    fi
+    if [ -f  $1 ]; then
+        chmod +x $1
+        ln -s -f $1 "$GITDIR"/$1
+        return 0
+    else
+        echo "No such file"
+        return 1
+    fi
 }
 
 # Store ssh key passwords in ssh-agent
