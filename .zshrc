@@ -3,12 +3,12 @@ DEFAULT_USER=diego
 
 # Path to your oh-my-zsh configuration.
 ZSH=$HOME/.oh-my-zsh
-if [ ! -d $ZSH ]; then
-    git clone git://github.com/robbyrussell/oh-my-zsh.git $ZSH
+if [ ! -d "$ZSH" ]; then
+    git clone git://github.com/robbyrussell/oh-my-zsh.git "$ZSH"
     git clone https://github.com/bhilburn/powerlevel9k.git ~/.oh-my-zsh/custom/themes/powerlevel9k
 fi
-if [ ! -d $ZSH/custom/plugins/zsh-autosuggestions/ ]; then
-    git clone https://github.com/zsh-users/zsh-autosuggestions ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-autosuggestions
+if [ ! -d "$ZSH"/custom/plugins/zsh-autosuggestions/ ]; then
+    git clone https://github.com/zsh-users/zsh-autosuggestions "${ZSH_CUSTOM:-~/.oh-my-zsh/custom}"/plugins/zsh-autosuggestions
 fi
 # Set name of the theme to load.
 # Look in ~/.oh-my-zsh/themes/
@@ -18,18 +18,20 @@ ZSH_THEME="powerlevel9k/powerlevel9k"
 
 COMPLETION_WAITING_DOTS="true"
 
-# Only show two dir levels in the prompt
-POWERLEVEL9K_SHORTEN_DIR_LENGTH=4
+# Only show three dir levels in the prompt
+POWERLEVEL9K_SHORTEN_DIR_LENGTH=3
 POWERLEVEL9K_PROMPT_ON_NEWLINE=true
 POWERLEVEL9K_PROMPT_ADD_NEWLINE=true
 POWERLEVEL9K_MULTILINE_FIRST_PROMPT_PREFIX=""
 POWERLEVEL9K_MULTILINE_LAST_PROMPT_PREFIX=""
 
-POWERLEVEL9K_LEFT_PROMPT_ELEMENTS=(dir dir_writable vcs )
-POWERLEVEL9K_RIGHT_PROMPT_ELEMENTS=(status  command_execution_time)
+POWERLEVEL9K_LEFT_PROMPT_ELEMENTS=(dir dir_writable vcs virtualenv)
+POWERLEVEL9K_RIGHT_PROMPT_ELEMENTS=(status root_indicator background_jobs command_execution_time)
 
 POWERLEVEL9K_DIR_WRITABLE_FORBIDDEN_FOREGROUND='black'
 POWERLEVEL9K_DIR_WRITABLE_FORBIDDEN_BACKGROUND='magenta'
+POWERLEVEL9K_COMMAND_EXECUTION_TIME_BACKGROUND='darkgoldenrod'
+POWERLEVEL9K_COMMAND_EXECUTION_TIME_FOREGROUND='black'
 
 # Which plugins would you like to load? (plugins can be found in ~/.oh-my-zsh/plugins/*)
 # Custom plugins may be added to ~/.oh-my-zsh/custom/plugins/
@@ -100,6 +102,11 @@ alias untar='tar -zxvf'
 alias untarxz='tar -xJf'
 #alias ls='ls -X -h --group-directories-first --color'
 alias grep='grep --color=auto'
+alias fx='firefox --new-instance --profile $(mktemp -d)'
+alias chr='google-chrome --no-default-browser-check --disable-breakpad --user-data-dir=$(mktemp -d)'
+alias plz='sudo $(fc -ln -1)'
+# Show Disk Use of subdirectories, sort by size
+alias duss="sudo du -d 1 -h | sort -hr | egrep -v ^0"
 
 #alias ydl="youtube-dl --write-sub --sub-lang en --convert-subs srt"
 
@@ -137,30 +144,29 @@ export HISTFILESIZE=100000
 # Uncomment following line if you want red dots to be displayed while waiting for completion
 # COMPLETION_WAITING_DOTS="true"
 
-
-
-
 # Customize to your needs...
 export GOPATH=~/go
-export PATH=/home/diego/apps:/home/diego/.local/bin:$GOPATH/bin:$PATH:/usr/local/go/bin:/home/diego/apps/google_appengine:/home/diego/bin:/usr/lib/lightdm/lightdm:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/home/diego/apps/openshift-origin-client-tools
+export PATH=/home/diego/apps:/home/diego/.local/bin:$GOPATH/bin:$PATH:/usr/local/go/bin:/home/diego/apps/google_appengine:/home/diego/bin:/usr/lib/lightdm/lightdm:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games
 export PATH="$HOME/.rbenv/bin:$PATH"
 #eval "$(rbenv init -)" > /dev/null
 
 # virtualenv
-[ -f /usr/local/bin/virtualenvwrapper.sh ] && source /usr/local/bin/virtualenvwrapper.sh
+[ -f /usr/local/bin/virtualenvwrapper.sh ] &&
+    source /usr/local/bin/virtualenvwrapper.sh
 
 # This loads nvm
-[ -s "/home/diego/.nvm/nvm.sh" ] && . "/home/diego/.nvm/nvm.sh" || echo install nvm
+[ -s "/home/diego/.nvm/nvm.sh" ] && . "/home/diego/.nvm/nvm.sh" ||
+        echo install nvm
 
 # The next line updates PATH for the Google Cloud SDK.
-[ -f /home/diego/apps/google-cloud-sdk/path.zsh.inc ] && source '/home/diego/apps/google-cloud-sdk/path.zsh.inc' || echo install google cloud sdk
+[ -f /home/diego/apps/google-cloud-sdk/path.zsh.inc ] &&
+    source '/home/diego/apps/google-cloud-sdk/path.zsh.inc' ||
+        echo install google cloud sdk
 
 # The next line enables shell command completion for gcloud.
-[ -f /home/diego/apps/google-cloud-sdk/completion.zsh.inc ] && source '/home/diego/apps/google-cloud-sdk/completion.zsh.inc' || echo install shell for gcloud
-
-# added by travis gem
-[ -f /home/diego/.travis/travis.sh ] && source /home/diego/.travis/travis.sh || echo install travis autocomplete
-
+[ -f /home/diego/apps/google-cloud-sdk/completion.zsh.inc ] &&
+    source '/home/diego/apps/google-cloud-sdk/completion.zsh.inc' ||
+        echo install shell for gcloud
 
 # creates a directory and cds into it
 function mkcd() {
@@ -204,7 +210,7 @@ curlbench() {
     if [[ -z $1 ]]; then
     echo "Usage: $0 http://example.com"
   fi
-  curl -w "@$HOME/.curl-format" -o /dev/null -s "$1"
+    curl -w "\n    time_namelookup:  %{time_namelookup}\n       time_connect:  %{time_connect}\n    time_appconnect:  %{time_appconnect}\n   time_pretransfer:  %{time_pretransfer}\n      time_redirect:  %{time_redirect}\n time_starttransfer:  %{time_starttransfer}\n                      -----   \n         time_total:  %{time_total}\n\n" -o /dev/null -s "$1"
 }
 
 ## R programming stuff
@@ -313,9 +319,9 @@ install_hook() {
         echo "Must be run inside a git repository"
         return 1
     fi
-    if [ -f  $1 ]; then
-        chmod +x $1
-        ln -s -f $1 "$GITDIR"/$1
+    if [ -f  "$1" ]; then
+        chmod +x "$1"
+        ln -s -f "$1" "$GITDIR"/"$1"
         return 0
     else
         echo "No such file"
@@ -323,5 +329,48 @@ install_hook() {
     fi
 }
 
+function cheat() {
+    curl -A 'curl' cht.sh/"$1"
+}
+
+function extract () {
+    if [ -f "$1" ] ; then
+        case "$1" in
+            *.tar.bz2)   tar xjf "$1"     ;;
+            *.tar.gz)    tar xzf "$1"     ;;
+            *.bz2)       bunzip2 "$1"     ;;
+            *.rar)       unrar e "$1"     ;;
+            *.gz)        gunzip "$1"      ;;
+            *.tar)       tar xf "$1"      ;;
+            *.tbz2)      tar xjf "$1"     ;;
+            *.tgz)       tar xzf "$1"     ;;
+            *.zip)       unzip "$1"       ;;
+            *.Z)         uncompress "$1"  ;;
+            *.7z)        7z x "$1"        ;;
+            *.deb)       ar x "$1"        ;;
+            *)     echo "'$1' cannot be extracted via extract()" ;;
+        esac
+    else
+        echo "'$1' is not a valid file"
+    fi
+}
+
+shreddir() {
+    if [[ -z "$1" ]]; then
+        echo Usage: shreddir directory
+    fi
+    if [ ! -d "$1" ]; then
+        echo "directory doesn't exists"
+        return 1
+    fi
+    read "REPLY?Are you sure you want to delete $1?"
+    echo    # (optional) move to a new line
+    if [[ $REPLY =~ ^[Yy]$ ]]
+    then
+        find "$1" -depth -type f -exec shred -v -n 1 {} \;
+        sync #forcing a sync of the buffers to the disk
+        find "$1" -depth -type f -exec shred -v -n 0 -z -u {} \;
+    fi
+}
 # Store ssh key passwords in ssh-agent
 # ps -p $SSH_AGENT_PID > /dev/null || eval $(ssh-agent -s)
