@@ -30,7 +30,7 @@ POWERLEVEL9K_RIGHT_PROMPT_ELEMENTS=(status root_indicator background_jobs comman
 
 POWERLEVEL9K_DIR_WRITABLE_FORBIDDEN_FOREGROUND='black'
 POWERLEVEL9K_DIR_WRITABLE_FORBIDDEN_BACKGROUND='magenta'
-POWERLEVEL9K_COMMAND_EXECUTION_TIME_BACKGROUND='darkgoldenrod'
+POWERLEVEL9K_COMMAND_EXECUTION_TIME_BACKGROUND='222'
 POWERLEVEL9K_COMMAND_EXECUTION_TIME_FOREGROUND='black'
 
 # Which plugins would you like to load? (plugins can be found in ~/.oh-my-zsh/plugins/*)
@@ -113,8 +113,11 @@ alias duss="sudo du -d 1 -h | sort -hr | egrep -v ^0"
 alias dotfiles='/usr/bin/git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME'
 
 y() {
+    # Avoid storing the command in history
+    /bin/sh << EOF
     youtube-dl --write-sub --sub-lang en --convert-subs srt $@
     #history -d $((HISTCMD))
+EOF
 }
 
 ### Extra ZSH options ###
