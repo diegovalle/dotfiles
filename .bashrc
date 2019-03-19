@@ -47,12 +47,12 @@ esac
 
 if [ -n "$force_color_prompt" ]; then
     if [ -x /usr/bin/tput ] && tput setaf 1 >&/dev/null; then
-	# We have color support; assume it's compliant with Ecma-48
-	# (ISO/IEC-6429). (Lack of such support is extremely rare, and such
-	# a case would tend to support setf rather than setaf.)
-	color_prompt=yes
+        # We have color support; assume it's compliant with Ecma-48
+        # (ISO/IEC-6429). (Lack of such support is extremely rare, and such
+        # a case would tend to support setf rather than setaf.)
+        color_prompt=yes
     else
-	color_prompt=
+        color_prompt=
     fi
 fi
 
@@ -85,9 +85,63 @@ if [ -x /usr/bin/dircolors ]; then
 fi
 
 # some more ls aliases
-alias ll='ls -alF'
-alias la='ls -A'
-alias l='ls -CF'
+alias mdd='mkdir $(date -I)'
+
+# virtualenv aliases
+# http://blog.doughellmann.com/2010/01/virtualenvwrapper-tips-and-tricks.html
+alias v='workon'
+alias v.deactivate='deactivate'
+alias v.mk='mkvirtualenv --no-site-packages'
+alias v.mk_withsitepackages='mkvirtualenv'
+alias v.rm='rmvirtualenv'
+alias v.switch='workon'
+alias v.add2virtualenv='add2virtualenv'
+alias v.cdsitepackages='cdsitepackages'
+alias v.cd='cdvirtualenv'
+alias v.lssitepackages='lssitepackages'
+alias su='sudo -H -s'
+
+### VirtualEnv ###
+# pip should only run if there is a virtualenv currently activated
+# prevents accidentally installing packages without a virtualenv
+#export PIP_REQUIRE_VIRTUALENV=true
+# create syspip workaround
+#syspip(){
+#   PIP_REQUIRE_VIRTUALENV="" pip "$@"
+#}
+#syspip3(){
+#   PIP_REQUIRE_VIRTUALENV="" pip3 "$@"
+#}
+
+alias mkdir='mkdir -pv'
+# install  colordiff package :)
+alias path='echo -e ${PATH//:/\\n}'
+alias now='date +"%T'
+alias nowtime=now
+alias nowdate='date +"%d-%m-%Y"'
+alias diff='colordiff'
+alias ports='netstat -tulanp'
+# alias cd..=cd ..
+alias l='ls -laF --group-directories-first'
+alias ll='ls -1aF --group-directories-first'
+alias ..='cd ..'
+alias ...='cd ../..'
+alias ....='cd ../../..'
+alias .....='cd ../../../..'
+alias ......='cd ../../../../..'
+alias pyfind='find . -name ".py"'
+alias pygrep='grep --include=".py"'
+alias rfind='find . -name ".R"'
+alias rgrep='grep --include=".R"'
+alias untar='tar -zxvf'
+alias untarxz='tar -xJf'
+#alias ls='ls -X -h --group-directories-first --color'
+alias grep='grep --color=auto'
+alias fx='firefox --new-instance --profile $(mktemp -d)'
+alias chr='google-chrome --no-default-browser-check --disable-breakpad --user-data-dir=$(mktemp -d)'
+alias plz='sudo $(fc -ln -1)'
+# Show Disk Use of subdirectories, sort by size
+alias duss="sudo du -d 1 -h | sort -hr | egrep -v ^0"
 
 # Add an "alert" alias for long running commands.  Use like so:
 #   sleep 10; alert
