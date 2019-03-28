@@ -245,12 +245,12 @@ rproject() {
   cat >> analysis.R<<EOF
 ## This program does
 
-## Install packages
+## Auto-Install packages
 .packs <- c("ggplot2")
 .success <- suppressWarnings(sapply(.packs, require, character.only = TRUE))
 if (length(names(.success)[!.success])) {
   install.packages(names(.success)[!.success])
-  sapply(names(success)[!.success], require, character.only = TRUE)
+  sapply(names(.success)[!.success], require, character.only = TRUE)
 }
 
 options(stringsAsFactors = FALSE)
@@ -358,22 +358,27 @@ function extract () {
     fi
 }
 
-shreddir() {
+wipe() {
     if [[ -z "$1" ]]; then
-        echo Usage: shreddir directory
+        echo Usage: wipe file|directory
     fi
-    if [ ! -d "$1" ]; then
-        echo "directory doesn't exists"
-        return 1
-    fi
-    read "REPLY?Are you sure you want to delete $1?"
+    read "REPLY?Are you sure you want to delete and wipe $1?"
     echo    # (optional) move to a new line
-    if [[ $REPLY =~ ^[Yy]$ ]]
-    then
-        find "$1" -depth -type f -exec shred -v -n 1 {} \;
-        sync #forcing a sync of the buffers to the disk
-        find "$1" -depth -type f -exec shred -v -n 0 -z -u {} \;
-    fi
+    for PASSED in "$@"
+    do
+        if [[ -d "$PASSED" ]]; then
+            find "$PASSED" -depth -type f -exec shred -v -n 1 {} \;
+            sync
+            find "$PASSED" -depth -type f -exec shred -v -n 0 -z -u {} \;
+        elif [[ -f $PASSED ]]; then
+            shred -v -n 1 $PASSED
+            sync
+            shred -v -n 0 -z -u $PASSED
+        else
+            echo "$PASSED is not valid file or directory"
+            exit 1
+        fi
+    done
 }
 # Store ssh key passwords in ssh-agent
 # ps -p $SSH_AGENT_PID > /dev/null || eval $(ssh-agent -s)
