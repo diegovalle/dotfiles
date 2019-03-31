@@ -86,7 +86,7 @@ alias nowtime=now
 alias nowdate='date +"%d-%m-%Y"'
 alias diff='colordiff'
 alias ports='netstat -tulanp'
-alias cd..=cd ..
+alias cd..='cd ..'
 alias l='ls -laF --group-directories-first'
 alias ll='ls -1aF --group-directories-first'
 alias ..='cd ..'
@@ -362,23 +362,28 @@ wipe() {
     if [[ -z "$1" ]]; then
         echo Usage: wipe file|directory
     fi
-    read "REPLY?Are you sure you want to delete and wipe $1?"
-    echo    # (optional) move to a new line
-    for PASSED in "$@"
-    do
-        if [[ -d "$PASSED" ]]; then
-            find "$PASSED" -depth -type f -exec shred -v -n 1 {} \;
-            sync
-            find "$PASSED" -depth -type f -exec shred -v -n 0 -z -u {} \;
-        elif [[ -f $PASSED ]]; then
-            shred -v -n 1 $PASSED
-            sync
-            shred -v -n 0 -z -u $PASSED
-        else
-            echo "$PASSED is not valid file or directory"
-            exit 1
-        fi
-    done
+    read "REPLY?Are you sure you want to delete and wipe $@? [y/n]"
+    echo ""
+    if [[ "$REPLY" == "y" ]]; then
+        for PASSED in "$@"
+        do
+            if [[ -d "$PASSED" ]]; then
+                find "$PASSED" -depth -type f -exec shred -v -n 1 {} \;
+                sync
+                find "$PASSED" -depth -type f -exec shred -v -n 0 -z -u {} \;
+            elif [[ -f $PASSED ]]; then
+                shred -v -n 1 $PASSED
+                sync
+                shred -v -n 0 -z -u $PASSED
+            else
+                echo "$PASSED is not valid file or directory"
+                return 1
+            fi
+        done
+    else
+        echo "You have to answer 'y' to delete"
+        return 1
+    fi
 }
 # Store ssh key passwords in ssh-agent
 # ps -p $SSH_AGENT_PID > /dev/null || eval $(ssh-agent -s)
