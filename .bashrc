@@ -13,8 +13,8 @@ HISTCONTROL=ignoredups:ignorespace
 shopt -s histappend
 
 # for setting history length see HISTSIZE and HISTFILESIZE in bash(1)
-HISTSIZE=1000
-HISTFILESIZE=2000
+HISTSIZE=100000
+HISTFILESIZE=200000
 
 # check the window size after each command and, if necessary,
 # update the values of LINES and COLUMNS.
@@ -296,8 +296,9 @@ EOF
 
 # Show to which directory we are changing into
 cd () {
-  builtin cd "$@"
-  echo "$OLDPWD -> $PWD"
+  if builtin cd "$@"; then
+      echo "$OLDPWD -> $PWD"
+  fi
 }
 
 # Create a symlink to the .git/hooks directory so
@@ -376,9 +377,11 @@ wipe() {
 
 }
 
+## Functions for the bash prompt
+
 function nonzero_return() {
     RETVAL=$?
-    [ $RETVAL -ne 0 ] && echo "$RETVAL:"
+    [ $RETVAL -ne 0 ] && echo "$RETVAL "
 }
 
 # get current branch in git repo
@@ -394,7 +397,7 @@ function parse_git_branch() {
 }
 
 # get current status of git repo
-function parse_git_dirty {
+function parse_git_dirty {cd
     status=$(git status 2>&1 | tee)
     dirty=$(echo -n "${status}" 2> /dev/null | grep "modified:" &> /dev/null; echo "$?")
     untracked=$(echo -n "${status}" 2> /dev/null | grep "Untracked files" &> /dev/null; echo "$?")
@@ -428,8 +431,46 @@ function parse_git_dirty {
     fi
 }
 
+##
+## ARRANGE $PWD AND STORE IT IN $NEW_PWD
+## * The home directory (HOME) is replaced with a ~
+## * The last pwdmaxlen characters of the PWD are displayed
+## * Leading partial directory names are striped off
+##  /home/me/stuff -> ~/stuff (if USER=me)
+##  /usr/share/big_dir_name -> ../share/big_dir_name (if pwdmaxlen=20)
+##
+## Original source: WOLFMAN'S color bash promt
+## https://wiki.chakralinux.org/index.php?title=Color_Bash_Prompt#Wolfman.27s
+##
+bash_prompt_command() {
+    # How many characters of the $PWD should be kept
+    local pwdmaxlen=25
 
-export PS1="\[\e[93;41m\]\`nonzero_return\`\[\e[m\]\[\e[m\]\h\[\e[1;30m\]:\[\e[1;34m\]\W\[\e[1;30m\]:\[\e[0;30;42m\]\`parse_git_branch\`\[\e[m\]\\$ "
+    # Indicate that there has been dir truncation
+    local trunc_symbol=".."
+
+    # Store local dir
+    local dir=${PWD##*/}
+
+    # Which length to use
+    pwdmaxlen=$(( ( pwdmaxlen < ${#dir} ) ? ${#dir} : pwdmaxlen ))
+
+    local NEW_PWD=${PWD/#$HOME/\~}
+
+    local pwdoffset=$(( ${#NEW_PWD} - pwdmaxlen ))
+
+    # Generate name
+    if [ ${pwdoffset} -gt "0" ]
+    then
+        NEW_PWD=${NEW_PWD:$pwdoffset:$pwdmaxlen}
+        NEW_PWD=${trunc_symbol}/${NEW_PWD#*/}
+    fi
+    echo $NEW_PWD
+}
+
+export PS1="\[\e[93;41m\]\`nonzero_return\`\[\e[m\]\[\033]0;\u:`bash_prompt_command`\007\]\[\033[0;1;93;44m\] \u \[\033[0;34;104m\]\[\033[0;0;30;104m\] \h \[\033[0;94;107m\]\[\033[0;30;30;107m\] \`bash_prompt_command\` \[\033[0;97;49m\]\[\033[0;67;5;74m\]\`parse_git_branch\`\n"
+
+#export PS1="\[\e[93;41m\]\`nonzero_return\`\[\e[m\]\[\033]0;\h\007\]:\[\e[1;34m\]\w\[\e[1;30m\]:\[\e[0;30;42m\]\`parse_git_branch\`\[\e[m\]${TRIANGLE} "
 #export PS1="\`nonzero_return\` "
 # Store ssh key passwords in ssh-agent
 # ps -p $SSH_AGENT_PID > /dev/null || eval $(ssh-agent -s)
