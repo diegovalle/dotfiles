@@ -317,8 +317,7 @@ install_hook() {
     if [[ -z $1 ]]; then
         echo Usage: install_hook hook.sh
     fi
-    GITDIR=$(git rev-parse --git-dir)/hooks
-    if [ ! $? -eq 0 ] ; then
+    if GITDIR=$(git rev-parse --git-dir)/hooks ; then
         echo "Must be run inside a git repository"
         return 1
     fi
@@ -358,11 +357,11 @@ function extract () {
     fi
 }
 
-wipe() {
+function wipe() {
     if [[ -z "$1" ]]; then
         echo Usage: wipe file|directory
     fi
-    read "REPLY?Are you sure you want to delete and wipe $@? [y/n]"
+    read "REPLY?Are you sure you want to delete and wipe $*? [y/n]"
     echo ""
     if [[ "$REPLY" == "y" ]]; then
         for PASSED in "$@"
@@ -372,9 +371,9 @@ wipe() {
                 sync
                 find "$PASSED" -depth -type f -exec shred -v -n 0 -z -u {} \;
             elif [[ -f $PASSED ]]; then
-                shred -v -n 1 $PASSED
+                shred -v -n 1 "$PASSED"
                 sync
-                shred -v -n 0 -z -u $PASSED
+                shred -v -n 0 -z -u "$PASSED"
             else
                 echo "$PASSED is not valid file or directory"
                 return 1
