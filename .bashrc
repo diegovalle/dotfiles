@@ -470,8 +470,11 @@ bash_prompt_command() {
     echo $NEW_PWD
 }
 
-export PS1="\[\e[93;41m\]\`nonzero_return\`\[\e[m\]\[\033]0;\u:`bash_prompt_command`\007\]\[\033[0;1;93;44m\] \u \[\033[0;34;104m\]\[\033[0;0;30;104m\] \h \[\033[0;94;107m\]\[\033[0;30;30;107m\] \`bash_prompt_command\` \[\033[0;97;49m\]\[\033[0;67;5;74m\]\`parse_git_branch\`\n"
-
+if ! [ $(id -u) -eq 0 ]; then
+    export PS1="\[\e[93;41m\]\`nonzero_return\`\[\e[m\]\[\033]0;\u:`bash_prompt_command`\007\]\[\033[0;0;31;101m\] \u \[\033[0;91;104m\]\[\033[0;0;30;104m\] \h \[\033[0;94;107m\]\[\033[0;30;30;107m\] \`bash_prompt_command\` \[\033[0;97;49m\]\[\033[0;67;5;74m\]\`parse_git_branch\`\n"
+else
+    export PS1="\[\e[93;41m\]\`nonzero_return\`\[\e[m\]\[\033]0;\u:`bash_prompt_command`\007\]\[\033[0;1;93;44m\] \u \[\033[0;34;104m\]\[\033[0;0;30;104m\] \h \[\033[0;94;107m\]\[\033[0;30;30;107m\] \`bash_prompt_command\` \[\033[0;97;49m\]\[\033[0;67;5;74m\]\`parse_git_branch\`\n"
+fi
 #export PS1="\[\e[93;41m\]\`nonzero_return\`\[\e[m\]\[\033]0;\h\007\]:\[\e[1;34m\]\w\[\e[1;30m\]:\[\e[0;30;42m\]\`parse_git_branch\`\[\e[m\]${TRIANGLE} "
 #export PS1="\`nonzero_return\` "
 # Store ssh key passwords in ssh-agent
