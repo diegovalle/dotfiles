@@ -6,6 +6,7 @@ ZSH=$HOME/.oh-my-zsh
 if [ ! -d "$ZSH" ]; then
     git clone git://github.com/robbyrussell/oh-my-zsh.git "$ZSH"
     git clone https://github.com/bhilburn/powerlevel9k.git ~/.oh-my-zsh/custom/themes/powerlevel9k
+    #git clone https://github.com/romkatv/powerlevel10k.git ~/.oh-my-zsh/custom/themes/powerlevel10k
 fi
 if [ ! -d "$ZSH"/custom/plugins/zsh-autosuggestions/ ]; then
     git clone https://github.com/zsh-users/zsh-autosuggestions "${ZSH_CUSTOM:-~/.oh-my-zsh/custom}"/plugins/zsh-autosuggestions
@@ -46,6 +47,10 @@ bindkey '\e[4~' end-of-line
 
 ## If you're crazy enough to not update oh-my-zsh
 #DISABLE_UPDATE_PROMPT=true
+
+# Add an "alert" alias for long running commands.  Use like so:
+#   sleep 10; alert
+alias alert='notify-send --urgency=low -i "$([ $? = 0 ] && echo terminal || echo error)" "$(echo $history[$(($HISTCMD-1))] |tail -n1|sed -e '\''s/^\s*[0-9]\+\s*//;s/[;&|]\s*alert$//'\'')"'
 
 # Example aliases
 # alias zshconfig="mate ~/.zshrc"
@@ -307,8 +312,9 @@ EOF
 
 # Show to which directory we are changing into
 cd () {
-  builtin cd "$@"
-  echo "$OLDPWD -> $PWD"
+  if builtin cd "$@"; then
+      echo "$OLDPWD -> $PWD"
+  fi
 }
 
 # Create a symlink to the .git/hooks directory so
