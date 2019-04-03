@@ -1,0 +1,25 @@
+language: bash
+
+os: linux
+dist: stretch
+sudo: required
+
+before_install:
+  - sudo apt-get update
+  - sudo apt-get install -y xz vim
+
+install:
+  - export scversion="stable" # or "v0.4.7", or "latest"
+  - wget -qO- "https://storage.googleapis.com/shellcheck/shellcheck-"${scversion}".linux.x86_64.tar.xz" | tar -xJv
+  - cp shellcheck-"${scversion}"/shellcheck /usr/bin/
+  - shellcheck --version
+  - git clone https://github.com/syngan/vim-vimlint /tmp/vim-vimlint
+  - git clone https://github.com/ynkdir/vim-vimlparser /tmp/vim-vimlparser
+
+before_script:
+  - shellcheck --version
+  - vim --version
+
+script:
+  - shellcheck .bashrc .profile .bash_profile .zshrc bootstrap.sh
+  - sh /tmp/vim-vimlint/bin/vimlint.sh -l /tmp/vim-vimlint -p /tmp/vim-vimlparser -v .vimrc
