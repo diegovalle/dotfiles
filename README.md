@@ -9,13 +9,17 @@
 - Oh-my-zsh
 - Powerline9k
 
+Based on creating a bare git repo as described in: [https://news.ycombinator.com/item?id=18896422](https://news.ycombinator.com/item?id=18896422)
 
 ## Install
 
-Install config tracking in your $HOME by running:
+by running:
 
-```bashsh
+```bash
 #!/bin/bash
+
+# Install Diego Valle's dotfiles
+# https://github.com/diegovalle/dotfiles
 
 git clone --recurse-submodules --bare \
     https://github.com/diegovalle/dotfiles.git "$HOME"/.dotfiles
@@ -23,10 +27,11 @@ dotfiles() {
    git --git-dir="$HOME"/.dotfiles/ --work-tree="$HOME" "$@"
 }
 
-if dotfiles checkout; then
+# Need to chekout emacs submodule
+if dotfiles checkout && cd .emacs.d && \
+        dotfiles submodule update --init --recursive;
+  then
     echo "Cloned dotfiles"
-    # Need to chekout emacs submodule
-    ( cd .emacs.d && dotfiles submodule update --init --recursive )
   else
     echo "Backing up pre-existing dot files.";
     mkdir -p .dotfiles-backup
