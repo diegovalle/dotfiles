@@ -13,7 +13,7 @@ Based on creating a bare git repo as described in: [https://news.ycombinator.com
 
 ## Install
 
-by running:
+by running bootstrap.sh
 
 ```bash
 #!/bin/bash
@@ -45,4 +45,5 @@ dotfiles config status.showUntrackedFiles no
 ```
 
 .dotfiles == directory to store the git database
+
 dotfiles == git alias
