@@ -13,8 +13,18 @@ HISTCONTROL=ignoredups:ignorespace
 shopt -s histappend
 
 # for setting history length see HISTSIZE and HISTFILESIZE in bash(1)
-HISTSIZE=100000
-HISTFILESIZE=200000
+# Save 5,000 lines of history in memory
+HISTSIZE=10000
+# Save 2,000,000 lines of history to disk (will have to grep ~/.bash_history for full listing)
+HISTFILESIZE=2000000
+# Ignore redundant or space commands
+HISTCONTROL=ignoreboth
+HISTIGNORE='ls:bg:fg:history'
+PROMPT_COMMAND='history -a'
+# 2008-08-05 19:02:39
+HISTTIMEFORMAT='%F %T '
+# Multiple commands on one line show up as a single line
+shopt -s cmdhist
 
 # check the window size after each command and, if necessary,
 # update the values of LINES and COLUMNS.
@@ -98,7 +108,7 @@ if [ -f /etc/bash_completion ] && ! shopt -oq posix; then
 fi
 
 # added by travis gem
-[ -f /home/diego/.travis/travis.sh ] && source /home/diego/.travis/travis.sh
+[ -f ~/.travis/travis.sh ] && source ~/.travis/travis.sh
 export PATH="$HOME/.rbenv/bin:$PATH"
 if [ -x "$(command -v rbenv)" ]; then
     eval "$(rbenv init -)"
@@ -470,7 +480,7 @@ bash_prompt_command() {
     echo $NEW_PWD
 }
 
-if ! [ $(id -u) -eq 0 ]; then
+if [ $(id -u) -eq 0 ]; then
     export PS1="\[\e[93;41m\]\`nonzero_return\`\[\e[m\]\[\033]0;\u:`bash_prompt_command`\007\]\[\033[0;0;31;101m\] \u \[\033[0;91;104m\]\[\033[0;0;30;104m\] \h \[\033[0;94;107m\]\[\033[0;30;30;107m\] \`bash_prompt_command\` \[\033[0;97;49m\]\[\033[0;67;5;74m\]\`parse_git_branch\`\n"
 else
     export PS1="\[\e[93;41m\]\`nonzero_return\`\[\e[m\]\[\033]0;\u:`bash_prompt_command`\007\]\[\033[0;1;93;44m\] \u \[\033[0;34;104m\]\[\033[0;0;30;104m\] \h \[\033[0;94;107m\]\[\033[0;30;30;107m\] \`bash_prompt_command\` \[\033[0;97;49m\]\[\033[0;67;5;74m\]\`parse_git_branch\`\n"
