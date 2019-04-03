@@ -18,7 +18,7 @@
 [core]
 	excludesfile = /home/diego/.gitignore_global
 	hooksPath = /home/diego/.githooks
-	editor = nano
+	editor = vim
 	
 [alias]
 	fixup = "!f() { TARGET=$(git rev-parse "$1"); git commit --fixup=$TARGET ${@:2} && EDITOR=true git rebase -i --autostash --autosquash $TARGET^; }; f"
