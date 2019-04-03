@@ -1,3 +1,9 @@
+# shellcheck disable=SC2148
+# shellcheck disable=SC2034
+# shellcheck disable=SC2029
+# shellcheck disable=SC2162
+# shellcheck source=/dev/null
+
 export TERM="xterm-256color"
 DEFAULT_USER=diego
 
@@ -105,15 +111,12 @@ alias rfind='find . -name ".R"'
 alias rgrep='grep --include=".R"'
 alias untar='tar -zxvf'
 alias untarxz='tar -xJf'
-#alias ls='ls -X -h --group-directories-first --color'
 alias grep='grep --color=auto'
 alias fx='firefox --new-instance --profile $(mktemp -d)'
 alias chr='google-chrome --no-default-browser-check --disable-breakpad --user-data-dir=$(mktemp -d)'
 alias plz='sudo $(fc -ln -1)'
 # Show Disk Use of subdirectories, sort by size
 alias duss="sudo du -d 1 -h | sort -hr | egrep -v ^0"
-
-#alias ydl="youtube-dl --write-sub --sub-lang en --convert-subs srt"
 
 alias dotfiles='/usr/bin/git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME'
 
@@ -176,6 +179,24 @@ export PATH="$HOME/.rbenv/bin:$PATH"
     source '/home/diego/apps/google-cloud-sdk/completion.zsh.inc' ||
         echo install shell for gcloud
 
+function sshrc() {
+    if [[ -z $1 ]]; then
+        echo "Specify a host"
+        return 1
+    fi
+    local RC_DATA
+    RC_DATA=$(base64 -w 0 < "${HOME}"/.bashrc)
+    ssh -t "$@" "echo \"${RC_DATA}\" | base64 --decode > /tmp/${USER}_bashrc; bash --rcfile /tmp/${USER}_bashrc; rm /tmp/${USER}_bashrc"
+}
+
+function sshtmux() {
+    if [[ -z $1 ]]; then
+        echo "Specify a host"
+        return 1
+    fi
+    ssh "$@" -t "tmux attach-session -t ssh_tmux || tmux new-session -s ssh_tmux"
+}
+
 # creates a directory and cds into it
 function mkcd() {
     mkdir -p "$1" && cd "$1" || exit
@@ -188,9 +209,9 @@ function zombie() {
 
 diceware () {
   if [[ -z $1 ]]; then
-    NUMWORDS=10
+    local NUMWORDS=10
   else
-    NUMWORDS=$1
+    local NUMWORDS=$1
   fi
   echo Your password has "$(echo "scale=1;$NUMWORDS * 12.9" | bc)" bits of entropy
   shuf --random-source=/dev/urandom ~/.eff_large_wordlist.txt | \
@@ -202,9 +223,9 @@ diceware () {
 
 diceware_short () {
   if [[ -z $1 ]]; then
-    NUMWORDS=12
+    local NUMWORDS=12
   else
-    NUMWORDS=$1
+    local NUMWORDS=$1
   fi
   echo Your password has "$(echo "scale=1;$NUMWORDS * 10.3" | bc)" bits of entropy
   shuf --random-source=/dev/urandom ~/.eff_small_wordlist.txt | \

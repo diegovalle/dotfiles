@@ -1,3 +1,9 @@
+#!/bin/bash
+#
+# shellcheck source=/dev/null
+# shellcheck disable=SC2029
+# shellcheck disable=SC2006
+#
 # ~/.bashrc: executed by bash(1) for non-login shells.
 # see /usr/share/doc/bash/examples/startup-files (in the package bash-doc)
 # for examples
@@ -46,7 +52,7 @@ esac
 # uncomment for a colored prompt, if the terminal has the capability; turned
 # off by default to not distract the user: the focus in a terminal window
 # should be on the output of commands, not on the prompt
-#force_color_prompt=yes
+force_color_prompt=yes
 
 if [ -n "$force_color_prompt" ]; then
     if [ -x /usr/bin/tput ] && tput setaf 1 >&/dev/null; then
@@ -77,7 +83,9 @@ esac
 
 # enable color support of ls and also add handy aliases
 if [ -x /usr/bin/dircolors ]; then
-    test -r ~/.dircolors && eval "$(dircolors -b ~/.dircolors)" || eval "$(dircolors -b)"
+    if test -r ~/.dircolors; then
+        eval "$(dircolors -b ~/.dircolors)" || eval "$(dircolors -b)"
+    fi
     alias ls='ls --color=auto'
     #alias dir='dir --color=auto'
     #alias vdir='vdir --color=auto'
@@ -171,6 +179,23 @@ alias duss="sudo du -d 1 -h | sort -hr | egrep -v ^0"
 
 alias dotfiles='/usr/bin/git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME'
 
+function sshrc() {
+    if [[ -z $1 ]]; then
+        echo "Specify a host"
+        return 1
+    fi
+    local RC_DATA
+    RC_DATA=$(base64 -w 0 < "${HOME}"/.bashrc)
+    ssh -t "$@" "echo \"${RC_DATA}\" | base64 --decode > /tmp/${USER}_bashrc; bash --rcfile /tmp/${USER}_bashrc; rm /tmp/${USER}_bashrc"
+}
+
+function sshtmux() {
+    if [[ -z $1 ]]; then
+        echo "Specify a host"
+        return 1
+    fi
+    ssh "$@" -t "tmux attach-session -t ssh_tmux || tmux new-session -s ssh_tmux"
+}
 
 # creates a directory and cds into it
 function mkcd() {
@@ -184,9 +209,9 @@ function zombie() {
 
 diceware () {
   if [[ -z $1 ]]; then
-    NUMWORDS=10
+    local NUMWORDS=10
   else
-    NUMWORDS=$1
+    local NUMWORDS=$1
   fi
   echo Your password has "$(echo "scale=1;$NUMWORDS * 12.9" | bc)" bits of entropy
   shuf --random-source=/dev/urandom ~/.eff_large_wordlist.txt | \
@@ -198,9 +223,9 @@ diceware () {
 
 diceware_short () {
   if [[ -z $1 ]]; then
-    NUMWORDS=12
+    local NUMWORDS=12
   else
-    NUMWORDS=$1
+    local NUMWORDS=$1
   fi
   echo Your password has "$(echo "scale=1;$NUMWORDS * 10.3" | bc)" bits of entropy
   shuf --random-source=/dev/urandom ~/.eff_small_wordlist.txt | \
@@ -477,15 +502,29 @@ bash_prompt_command() {
         NEW_PWD=${NEW_PWD:$pwdoffset:$pwdmaxlen}
         NEW_PWD=${trunc_symbol}/${NEW_PWD#*/}
     fi
-    echo $NEW_PWD
+    echo "$NEW_PWD"
 }
 
-if [ $(id -u) -eq 0 ]; then
-    export PS1="\[\e[93;41m\]\`nonzero_return\`\[\e[m\]\[\033]0;\u:`bash_prompt_command`\007\]\[\033[0;0;31;101m\] \u \[\033[0;91;104m\]\[\033[0;0;30;104m\] \h \[\033[0;94;107m\]\[\033[0;30;30;107m\] \`bash_prompt_command\` \[\033[0;97;49m\]\[\033[0;67;5;74m\]\`parse_git_branch\`\n"
+# https://serverfault.com/questions/187712/how-to-determine-if-im-logged-in-via-ssh
+if [ -n "$SSH_CLIENT" ] || [ -n "$SSH_TTY" ]; then
+    SESSION_TYPE=remote/ssh
 else
-    export PS1="\[\e[93;41m\]\`nonzero_return\`\[\e[m\]\[\033]0;\u:`bash_prompt_command`\007\]\[\033[0;1;93;44m\] \u \[\033[0;34;104m\]\[\033[0;0;30;104m\] \h \[\033[0;94;107m\]\[\033[0;30;30;107m\] \`bash_prompt_command\` \[\033[0;97;49m\]\[\033[0;67;5;74m\]\`parse_git_branch\`\n"
+    case $(ps -o comm= -p $PPID) in
+        sshd|*/sshd) SESSION_TYPE=remote/ssh;;
+    esac
 fi
-#export PS1="\[\e[93;41m\]\`nonzero_return\`\[\e[m\]\[\033]0;\h\007\]:\[\e[1;34m\]\w\[\e[1;30m\]:\[\e[0;30;42m\]\`parse_git_branch\`\[\e[m\]${TRIANGLE} "
-#export PS1="\`nonzero_return\` "
-# Store ssh key passwords in ssh-agent
-# ps -p $SSH_AGENT_PID > /dev/null || eval $(ssh-agent -s)
+
+# Four types of prompt: remote and root
+if [ "$SESSION_TYPE" == "remote/ssh" ]; then
+    if [ "$(id -u)" -eq 0 ]; then
+        PS1="\[\e[93;41m\]\`nonzero_return\`\[\e[m\]\[\033]0;\u:`bash_prompt_command`\007\]\[\033[0;0;31;101m\] \u@\h \[\033[0;91;107m\]\[\033[0;30;30;107m\] \`bash_prompt_command\` \[\033[0;97;49m\]\[\033[0;67;5;74m\]\`parse_git_branch\`\n"
+    else
+        PS1="\[\e[93;41m\]\`nonzero_return\`\[\e[m\]\[\033]0;\u:`bash_prompt_command`\007\]\[\033[0;0;30;43m\] \u@\h \[\033[0;33;107m\]\[\033[0;30;30;107m\] \`bash_prompt_command\` \[\033[0;97;49m\]\[\033[0;67;5;74m\]\`parse_git_branch\`\n"
+    fi
+else
+   if [ "$(id -u)" -eq 0 ]; then
+        PS1="\[\e[93;41m\]\`nonzero_return\`\[\e[m\]\[\033]0;\u:`bash_prompt_command`\007\]\[\033[0;0;31;101m\] \u \[\033[0;91;104m\]\[\033[0;0;30;104m\] \h \[\033[0;94;107m\]\[\033[0;30;30;107m\] \`bash_prompt_command\` \[\033[0;97;49m\]\[\033[0;67;5;74m\]\`parse_git_branch\`\n"
+    else
+        PS1="\[\e[93;41m\]\`nonzero_return\`\[\e[m\]\[\033]0;\u:`bash_prompt_command`\007\]\[\033[0;1;93;44m\] \u \[\033[0;34;104m\]\[\033[0;0;30;104m\] \h \[\033[0;94;107m\]\[\033[0;30;30;107m\] \`bash_prompt_command\` \[\033[0;97;49m\]\[\033[0;67;5;74m\]\`parse_git_branch\`\n"
+    fi
+fi
