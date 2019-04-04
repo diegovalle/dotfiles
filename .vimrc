@@ -10,3 +10,6 @@ set tabstop=4           " number of visual spaces per TAB
 set expandtab           " tabs are spaces
 " Use visual bell instead of beeping when doing something wrong
 set visualbell
+set spelllang=en        " spell English words
+" Spellcheck for git commit messages
+autocmd FileType gitcommit setlocal spell
