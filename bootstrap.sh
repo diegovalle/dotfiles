@@ -18,9 +18,9 @@ if dotfiles checkout && ( cd .emacs.d && \
   else
     echo "Backing up pre-existing dot files.";
     mkdir -p "$HOME"/.dotfiles-backup
-    echo "Backing up pre-existeing files to .dotfiles-backup"
+    echo "Backing up pre-existeing files to ~/.dotfiles-backup"
     ls -la /home/travis
-    dotfiles checkout 2>&1 | grep -E "^\s+" | awk '{print $1}' | \
+    dotfiles checkout 2>&1 || true | grep -E "^\s+" | awk '{print $1}' | \
         xargs -I{} mv "$HOME"/{} "$HOME"/.dotfiles-backup/{}
     pwd
     ls -la /home/travis
