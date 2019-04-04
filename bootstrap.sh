@@ -10,8 +10,8 @@ dotfiles() {
 }
 
 # Need to chekout emacs submodule
-if checkout && cd .emacs.d && \
-        dotfiles submodule update --init --recursive;
+if dotfiles checkout && ( cd .emacs.d && \
+        dotfiles submodule update --init --recursive );
   then
     echo "Cloned dotfiles"
   else
