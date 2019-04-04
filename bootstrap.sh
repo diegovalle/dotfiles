@@ -1,5 +1,4 @@
 #!/bin/bash
-set -euo pipefail
 set -x
 # Install Diego Valle's dotfiles
 # https://github.com/diegovalle/dotfiles
@@ -24,7 +23,7 @@ if dotfiles checkout && ( cd .emacs.d && \
         xargs -I{} mv "$HOME"/{} "$HOME"/.dotfiles-backup/{}
     pwd
     ls -la /home/travis
-    ls -la .dotfiles-backup
+    ls -la "$HOME"/.dotfiles-backup
     dotfiles checkout
     ( cd .emacs.d && dotfiles submodule update --init --recursive )
 fi;
