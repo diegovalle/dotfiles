@@ -1,4 +1,5 @@
 #!/bin/bash
+set -euo pipefail
 set -x
 # Install Diego Valle's dotfiles
 # https://github.com/diegovalle/dotfiles
@@ -16,7 +17,7 @@ if dotfiles checkout && ( cd .emacs.d && \
     echo "Cloned dotfiles"
   else
     echo "Backing up pre-existing dot files.";
-    mkdir -p .dotfiles-backup
+    mkdir -p "$HOME"/.dotfiles-backup
     echo "Backing up pre-existeing files to .dotfiles-backup"
     ls -la /home/travis
     dotfiles checkout 2>&1 | grep -E "^\s+" | awk '{print $1}' | \
