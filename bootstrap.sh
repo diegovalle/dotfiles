@@ -1,4 +1,5 @@
 #!/bin/bash
+set -euo pipefail
 set -x
 # Install Diego Valle's dotfiles
 # https://github.com/diegovalle/dotfiles
