@@ -21,5 +21,6 @@ before_script:
   - vim --version
 
 script:
+  - ./bootstrap.sh
   - shellcheck .bashrc .profile .bash_profile .zshrc bootstrap.sh
   - sh /tmp/vim-vimlint/bin/vimlint.sh -l /tmp/vim-vimlint -p /tmp/vim-vimlparser -v .vimrc
