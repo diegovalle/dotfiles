@@ -1,6 +1,6 @@
 #!/bin/bash
 set -euo pipefail
-set -x
+
 # Install Diego Valle's dotfiles
 # https://github.com/diegovalle/dotfiles
 
@@ -16,17 +16,13 @@ if dotfiles checkout && ( cd .emacs.d && \
   then
     echo "Cloned dotfiles"
   else
-    echo "Backing up pre-existing dot files.";
-    mkdir -p "$HOME"/.dotfiles-backup
     echo "Backing up pre-existeing files to ~/.dotfiles-backup"
-    ls -la /home/travis
+    mkdir -p "$HOME"/.dotfiles-backup
     (dotfiles checkout 2>&1 || true) | grep -E "^\s+" | awk '{print $1}' | \
         xargs -I{} mv "$HOME"/{} "$HOME"/.dotfiles-backup/{}
     if [ -d "$HOME"/.emacs.d ]; then
         mv -R "$HOME"/.emacs.d "$HOME"/.dotfiles-backup
     fi
-    ls -la /home/travis
-    ls -la "$HOME"/.dotfiles-backup
     dotfiles checkout
     ( cd .emacs.d && dotfiles submodule update --init --recursive )
 fi;
