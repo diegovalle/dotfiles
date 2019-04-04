@@ -1,5 +1,7 @@
 # Dotfiles for diegovalle
 
+[![Build Status](https://travis-ci.org/diegovalle/dotfiles.svg?branch=master)](https://travis-ci.org/diegovalle/dotfiles)
+
 ## Requirements
 
 - Git
