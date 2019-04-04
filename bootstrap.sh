@@ -18,10 +18,10 @@ if dotfiles checkout && ( cd .emacs.d && \
     echo "Backing up pre-existing dot files.";
     mkdir -p .dotfiles-backup
     echo "Backing up pre-existeing files to .dotfiles-backup"
-    ls -la
+    ls -la /home/travis
     dotfiles checkout 2>&1 | grep -E "^\s+" | awk '{print $1}' | \
         xargs -I{} mv {} .dotfiles-backup/{}
-    ls -la
+    ls -la /home/travis
     ls -la .dotfiles-backup
     dotfiles checkout
     ( cd .emacs.d && dotfiles submodule update --init --recursive )
