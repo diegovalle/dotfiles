@@ -22,6 +22,7 @@ if checkout && cd .emacs.d && \
     dotfiles checkout 2>&1 | grep -E "^\s+" | awk '{print $1}' | \
         xargs -I{} mv {} .dotfiles-backup/{}
     ls -la
+    ls -la .dotfiles-backup
     dotfiles checkout
     ( cd .emacs.d && dotfiles submodule update --init --recursive )
 fi;
