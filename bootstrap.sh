@@ -1,5 +1,5 @@
 #!/bin/bash
-
+set -x
 # Install Diego Valle's dotfiles
 # https://github.com/diegovalle/dotfiles
 
@@ -10,13 +10,14 @@ dotfiles() {
 }
 
 # Need to chekout emacs submodule
-if dotfiles checkout && cd .emacs.d && \
+if checkout && cd .emacs.d && \
         dotfiles submodule update --init --recursive;
   then
     echo "Cloned dotfiles"
   else
     echo "Backing up pre-existing dot files.";
     mkdir -p .dotfiles-backup
+    echo "Backing up pre-existeing files to .dotfiles-backup"
     dotfiles checkout 2>&1 | grep -E "^\s+" | awk '{print $1}' | \
              xargs -I{} mv {} .dotfiles-backup/{}
     dotfiles checkout
