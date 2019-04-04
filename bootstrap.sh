@@ -20,7 +20,8 @@ if dotfiles checkout && ( cd .emacs.d && \
     echo "Backing up pre-existeing files to .dotfiles-backup"
     ls -la /home/travis
     dotfiles checkout 2>&1 | grep -E "^\s+" | awk '{print $1}' | \
-        xargs -I{} mv {} .dotfiles-backup/{}
+        xargs -I{} mv "$HOME"/{} "$HOME"/.dotfiles-backup/{}
+    pwd
     ls -la /home/travis
     ls -la .dotfiles-backup
     dotfiles checkout
