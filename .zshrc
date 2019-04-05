@@ -121,12 +121,21 @@ alias duss="sudo du -d 1 -h | sort -hr | egrep -v ^0"
 alias dotfiles='/usr/bin/git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME'
 
 y() {
-    # Avoid storing the command in history
-    /bin/sh << EOF
-    youtube-dl --write-sub --sub-lang en --convert-subs srt $@
-    #history -d $((HISTCMD))
-EOF
+    youtube-dl --write-sub --sub-lang en --convert-subs srt "$@"
 }
+
+# Don' store certain commands in history
+function zshaddhistory() {
+    emulate -L zsh
+    if ! [[ $1 =~ ^"y\ |--password".* ]] ; then
+        print -sr -- "${1%%$'\n'}"
+        fc -p
+    else
+        return 1
+    fi
+}
+
+
 
 ### Extra ZSH options ###
 # If querying the user before executing `rm *' or `rm
