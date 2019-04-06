@@ -47,6 +47,33 @@ plugins=(git virtualenv zsh-autosuggestions)
 
 source "$ZSH"/oh-my-zsh.sh
 
+### Extra ZSH options ###
+# If querying the user before executing `rm *' or `rm
+# path/*', first wait ten seconds and ignore anything typed
+# in that time. This avoids the problem of reflexively
+# answering `yes' to the query when one didn't really mean
+# it.
+setopt RM_STAR_WAIT
+
+# Commands prefaced by a space aren't saved to .zsh_history
+export HISTCONTROL=ignorespace
+export HISTFILESIZE=100000
+
+# Set to this to use case-sensitive completion
+# CASE_SENSITIVE="true"
+
+# Comment this out to disable weekly auto-update checks
+# DISABLE_AUTO_UPDATE="true"
+
+# Uncomment following line if you want to disable colors in ls
+# DISABLE_LS_COLORS="true"
+
+# Uncomment following line if you want to disable autosetting terminal title.
+# DISABLE_AUTO_TITLE="true"
+
+# Uncomment following line if you want red dots to be displayed while waiting for completion
+# COMPLETION_WAITING_DOTS="true"
+
 # Who doesn't want home and end to work?
 bindkey '\e[1~' beginning-of-line
 bindkey '\e[4~' end-of-line
@@ -127,7 +154,7 @@ y() {
 # Don' store certain commands in history
 function zshaddhistory() {
     emulate -L zsh
-    if ! [[ $1 =~ ^"y\ |--password".* ]] ; then
+    if ! [[ $1 =~ ^"y\ |--password|^ |^ls" ]] ; then
         print -sr -- "${1%%$'\n'}"
         fc -p
     else
@@ -135,34 +162,6 @@ function zshaddhistory() {
     fi
 }
 
-
-
-### Extra ZSH options ###
-# If querying the user before executing `rm *' or `rm
-# path/*', first wait ten seconds and ignore anything typed
-# in that time. This avoids the problem of reflexively
-# answering `yes' to the query when one didn't really mean
-# it.
-setopt RM_STAR_WAIT
-
-# Commands prefaced by a space aren't saved to .zsh_history
-export HISTCONTROL=ignorespace
-export HISTFILESIZE=100000
-
-# Set to this to use case-sensitive completion
-# CASE_SENSITIVE="true"
-
-# Comment this out to disable weekly auto-update checks
-# DISABLE_AUTO_UPDATE="true"
-
-# Uncomment following line if you want to disable colors in ls
-# DISABLE_LS_COLORS="true"
-
-# Uncomment following line if you want to disable autosetting terminal title.
-# DISABLE_AUTO_TITLE="true"
-
-# Uncomment following line if you want red dots to be displayed while waiting for completion
-# COMPLETION_WAITING_DOTS="true"
 
 # Customize to your needs...
 export GOPATH=~/go
