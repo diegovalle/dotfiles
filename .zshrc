@@ -154,7 +154,7 @@ y() {
 # Don' store certain commands in history
 function zshaddhistory() {
     emulate -L zsh
-    if ! [[ $1 =~ ^"y\ |--password|^ |^ls" ]] ; then
+    if ! [[ $1 =~ ^"y\ |--password|^ |^ls|^cd" ]] ; then
         print -sr -- "${1%%$'\n'}"
         fc -p
     else
