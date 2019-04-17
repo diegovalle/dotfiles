@@ -139,8 +139,9 @@ options(
 ## message("Using library: ", .libPaths()[1])
 
 cat(
+    R.Version()$version.string,
     "Library Path:",
-    Sys.getenv("R_LIBS_SITE_USER"),
+    if (Sys.getenv("R_LIBS_SITE_USER") == "") {.libPaths()},
     "",
     "Working Directory:",
     normalizePath(getwd()),
