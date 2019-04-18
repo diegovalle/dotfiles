@@ -169,9 +169,9 @@ alias fx='firefox --new-instance --profile $(mktemp -d)'
 alias chr='google-chrome --no-default-browser-check --disable-breakpad --user-data-dir=$(mktemp -d)'
 alias plz='sudo $(fc -ln -1)'
 # Show Disk Use of subdirectories, sort by size
-alias duss="sudo du -d 1 -h | sort -hr | egrep -v ^0"
+alias duss='du -d 1 -h | sort -hr | egrep -v ^0'
 
-alias y="youtube-dl --write-sub --sub-lang en --convert-subs srt"
+alias y='youtube-dl --write-sub --sub-lang en --convert-subs srt'
 
 alias dotfiles='/usr/bin/git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME'
 
