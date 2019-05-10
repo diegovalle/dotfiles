@@ -276,10 +276,8 @@ rproject() {
   mkdir -p "$1/cache"
   mkdir -p "$1/meta"
   cd "$1" || exit
-  cat >> analysis.R<<EOF
-## This program does
-
-## Auto-Install packages
+  cat >> R/packages.R<<EOF
+## Auto-Install the following packages
 .packs <- c("ggplot2")
 .success <- suppressWarnings(sapply(.packs, require, character.only = TRUE))
 if (length(names(.success)[!.success])) {
@@ -288,7 +286,11 @@ if (length(names(.success)[!.success])) {
 }
 
 options(stringsAsFactors = FALSE)
+EOF
+  cat >> main.R<<EOF
+## This program does
 
+source("R/packages.R)
 ## source("R/functions.R")
 EOF
   cat >> .gitignore<<EOF
@@ -298,6 +300,7 @@ EOF
 cache/*
 EOF
   touch README.md
+  touch graphs/.gitkeep output/.gitkeep
   {
   printf "Version: 1.0\n"
   printf "\n"
@@ -334,8 +337,18 @@ mkbash() {
     fi
     cat >> "$1" <<EOF
 #!/bin/bash
-set -euo pipefail #exit on error, undefined and prevent pipeline errors
+# Exit on error, undefined and prevent pipeline errors,
+# use '|| true' on commands that intentionally exit non-zero
+set -euo pipefail
+# The directory from which the script is running
+LOCALDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 IFS=$'\n\t'
+
+main() {
+    local $VAR=123
+}
+
+main
 EOF
 }
 
