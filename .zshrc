@@ -290,7 +290,7 @@ EOF
   cat >> main.R<<EOF
 ## This program does
 
-source("R/packages.R)
+source("R/packages.R")
 ## source("R/functions.R")
 EOF
   cat >> .gitignore<<EOF
