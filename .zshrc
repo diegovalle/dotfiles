@@ -147,6 +147,11 @@ alias duss='du -d 1 -h | sort -hr | egrep -v ^0'
 
 alias dotfiles='/usr/bin/git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME'
 
+
+# secret stuff
+[ -f ~/.zsh_secrets ] &&
+    source ~/.zsh_secrets
+
 y() {
     youtube-dl --write-sub --sub-lang en --convert-subs srt "$@"
 }
@@ -154,7 +159,7 @@ y() {
 # Don' store certain commands in history
 function zshaddhistory() {
     emulate -L zsh
-    if ! [[ $1 =~ ^"y\ |--password|^ |^ls|^cd" ]] ; then
+    if ! [[ $1 =~ ^"y\ |^ |^ls|^cd|^ptor" ]] ; then
         print -sr -- "${1%%$'\n'}"
         fc -p
     else
