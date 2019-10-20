@@ -219,8 +219,8 @@ export PATH="$HOME/.rbenv/bin:$PATH"
 #eval "$(rbenv init -)" > /dev/null
 
 # virtualenv
-if VENVWRAP=$(/usr/bin/which "virtualenvwrapper.sh"); then
-    source $VENVWRAP
+if VENVWRAP=$(command -v "virtualenvwrapper.sh"); then
+    source "$VENVWRAP"
 else
     echo "Please install virutalenvwrapper"
 fi
