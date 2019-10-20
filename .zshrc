@@ -7,6 +7,9 @@
 export TERM="xterm-256color"
 DEFAULT_USER=diego
 
+#No gatsby telemetry
+GATSBY_TELEMETRY_DISABLED=1
+
 # Path to your oh-my-zsh configuration.
 ZSH=$HOME/.oh-my-zsh
 if [ ! -d "$ZSH" ]; then
@@ -147,6 +150,47 @@ alias duss='du -d 1 -h | sort -hr | egrep -v ^0'
 
 alias dotfiles='/usr/bin/git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME'
 
+# ----------------------
+# Git Aliases
+# ----------------------
+alias ga='git add'
+alias gaa='git add .'
+alias gaaa='git add --all'
+alias gau='git add --update'
+alias gb='git branch'
+alias gbd='git branch --delete '
+alias gc='git commit'
+alias gcm='git commit --message'
+alias gcf='git commit --fixup'
+alias gco='git checkout'
+alias gcob='git checkout -b'
+alias gcom='git checkout master'
+alias gcod='git checkout develop'
+alias gd='git diff'
+alias gda='git diff HEAD'
+alias gi='git init'
+alias glg='git log --graph --oneline --decorate --all'
+alias gld='git log --pretty=format:"%h %ad %s" --date=short --all'
+alias gm='git merge --no-ff'
+alias gma='git merge --abort'
+alias gmc='git merge --continue'
+alias gp='git pull'
+alias gpr='git pull --rebase'
+alias gr='git rebase'
+alias gs='git status'
+alias gss='git status --short'
+alias gst='git stash'
+alias gsta='git stash apply'
+alias gstd='git stash drop'
+alias gstl='git stash list'
+alias gstp='git stash pop'
+alias gsts='git stash save'
+
+# ----------------------
+# Git Functions
+# ----------------------
+# Git log find by commit message
+function glf() { git log --all --grep="$1"; }
 
 # secret stuff
 [ -f ~/.zsh_secrets ] &&
@@ -159,7 +203,7 @@ y() {
 # Don' store certain commands in history
 function zshaddhistory() {
     emulate -L zsh
-    if ! [[ $1 =~ ^"y\ |^ |^ls|^cd|^ptor" ]] ; then
+    if ! [[ $1 =~ ^"y\ |^ |^ls" ]] ; then
         print -sr -- "${1%%$'\n'}"
         fc -p
     else
@@ -175,8 +219,11 @@ export PATH="$HOME/.rbenv/bin:$PATH"
 #eval "$(rbenv init -)" > /dev/null
 
 # virtualenv
-[ -f /usr/local/bin/virtualenvwrapper.sh ] &&
-    source /usr/local/bin/virtualenvwrapper.sh
+if VENVWRAP=$(/usr/bin/which "virtualenvwrapper.sh"); then
+    source $VENVWRAP
+else
+    echo "Please install virutalenvwrapper"
+fi
 
 # This loads nvm
 [ -s "/home/diego/.nvm/nvm.sh" ] && . "/home/diego/.nvm/nvm.sh" ||
