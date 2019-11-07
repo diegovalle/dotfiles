@@ -239,6 +239,13 @@ fi
     source '/home/diego/apps/google-cloud-sdk/completion.zsh.inc' ||
         echo install shell for gcloud
 
+function tailcolor(){
+    tail -F "$1" |
+        while read -r line;do
+            printf "\033[38;5;%dm%s\033[0m\n" $((RANDOM%255)) "$line";
+        done
+}
+
 function sshrc() {
     if [[ -z $1 ]]; then
         echo "Specify a host"
