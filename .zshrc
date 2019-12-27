@@ -8,7 +8,7 @@ export TERM="xterm-256color"
 DEFAULT_USER=diego
 
 #No gatsby telemetry
-GATSBY_TELEMETRY_DISABLED=1
+export GATSBY_TELEMETRY_DISABLED=1
 
 # Path to your oh-my-zsh configuration.
 ZSH=$HOME/.oh-my-zsh
@@ -239,7 +239,7 @@ fi
     source '/home/diego/apps/google-cloud-sdk/completion.zsh.inc' ||
         echo install shell for gcloud
 
-function tailcolor(){
+function tailc() {
     tail -F "$1" |
         while read -r line;do
             printf "\033[38;5;%dm%s\033[0m\n" $((RANDOM%255)) "$line";
@@ -378,6 +378,40 @@ EOF
   return 0
 }
 
+mkmakefile() {
+    if [ -f Makefile ]; then
+        echo "there's already a Makefile in this directory"
+        return 1
+    fi
+    cat >> Makefile<<EOF
+SHELL := bash
+.ONESHELL:
+.SHELLFLAGS := -eu -o pipefail -c
+.DELETE_ON_ERROR:
+
+# default rule
+all: out/image-id
+.PHONY: build
+
+clean:
+> rm -rf .cache
+> rm -rf out
+.PHONY: clean
+
+# Tests - re-run if any file under src has been changed since
+# .cache/.tests-passed.sentinel was last touched
+.cache/.tests-passed.sentinel: $(shell find src -type f)
+> mkdir -p $(@D)
+> node run test
+> touch $@
+
+# Build rebuild if the tests have been rebuilt
+.cache/.packed.sentinel: .cache/.tests-passed.sentinel
+> mkdir -p $(@D)
+> webpack ..
+> touch $@
+EOF
+}
 
 # To change the R package directory uncomment
 #R_LIBS_SITE_USER="/home/diego/R/packages"

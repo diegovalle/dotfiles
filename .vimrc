@@ -12,4 +12,4 @@ set expandtab           " tabs are spaces
 set visualbell
 set spelllang=en        " spell English words
 " Spellcheck for git commit messages
-autocmd FileType gitcommit setlocal spell
+au BufNewFile,BufRead COMMIT_EDITMSG setlocal spell
