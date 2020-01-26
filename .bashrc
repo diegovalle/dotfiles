@@ -524,3 +524,4 @@ else
         PS1="\[\e[93;41m\]\`nonzero_return\`\[\e[m\]\[\033]0;\u:`bash_prompt_command`\007\]\[\033[0;1;93;44m\] \u \[\033[0;34;104m\]\[\033[0;0;30;104m\] \h \[\033[0;94;107m\]\[\033[0;30;30;107m\] \`bash_prompt_command\` \[\033[0;97;49m\]\[\033[0;67;5;74m\]\`parse_git_branch\`\n"
     fi
 fi
+alias ic="ibmcloud"

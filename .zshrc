@@ -434,11 +434,11 @@ mkbash() {
 # use '|| true' on commands that intentionally exit non-zero
 set -euo pipefail
 # The directory from which the script is running
-readonly LOCALDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+readonly LOCALDIR="\$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 IFS=$'\n\t'
 
 main() {
-    local $VAR=123
+    local \$VAR=123
 }
 
 main
