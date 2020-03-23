@@ -1,3 +1,10 @@
+# Enable Powerlevel10k instant prompt. Should stay close to the top of ~/.zshrc.
+# Initialization code that may require console input (password prompts, [y/n]
+# confirmations, etc.) must go above this block, everything else may go below.
+if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
+  source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
+fi
+
 # shellcheck disable=SC2148
 # shellcheck disable=SC2034
 # shellcheck disable=SC2029
@@ -14,8 +21,8 @@ export GATSBY_TELEMETRY_DISABLED=1
 ZSH=$HOME/.oh-my-zsh
 if [ ! -d "$ZSH" ]; then
     git clone git://github.com/robbyrussell/oh-my-zsh.git "$ZSH"
-    git clone https://github.com/bhilburn/powerlevel9k.git ~/.oh-my-zsh/custom/themes/powerlevel9k
-    #git clone https://github.com/romkatv/powerlevel10k.git ~/.oh-my-zsh/custom/themes/powerlevel10k
+    #git clone https://github.com/bhilburn/powerlevel9k.git ~/.oh-my-zsh/custom/themes/powerlevel9k
+    git clone https://github.com/romkatv/powerlevel10k.git ~/.oh-my-zsh/custom/themes/powerlevel10k
 fi
 if [ ! -d "$ZSH"/custom/plugins/zsh-autosuggestions/ ]; then
     git clone https://github.com/zsh-users/zsh-autosuggestions "${ZSH_CUSTOM:-~/.oh-my-zsh/custom}"/plugins/zsh-autosuggestions
@@ -24,7 +31,7 @@ fi
 # Look in ~/.oh-my-zsh/themes/
 # Optionally, if you set this to "random", it'll load a random theme each
 # time that oh-my-zsh is loaded.
-ZSH_THEME="powerlevel9k/powerlevel9k"
+ZSH_THEME="powerlevel10k/powerlevel10k"
 
 COMPLETION_WAITING_DOTS="true"
 
@@ -46,7 +53,7 @@ POWERLEVEL9K_COMMAND_EXECUTION_TIME_FOREGROUND='black'
 # Which plugins would you like to load? (plugins can be found in ~/.oh-my-zsh/plugins/*)
 # Custom plugins may be added to ~/.oh-my-zsh/custom/plugins/
 # Example format: plugins=(rails git textmate ruby lighthouse)
-plugins=(git virtualenv zsh-autosuggestions)
+plugins=(virtualenv zsh-autosuggestions history-substring-search)
 
 source "$ZSH"/oh-my-zsh.sh
 
@@ -143,7 +150,8 @@ alias untar='tar -zxvf'
 alias untarxz='tar -xJf'
 alias grep='grep --color=auto'
 alias fx='firefox --new-instance --profile $(mktemp -d)'
-alias chr='google-chrome --no-default-browser-check --disable-breakpad --user-data-dir=$(mktemp -d)'
+alias chr='google-chrome --no-first-run --no-default-browser-check --disable-breakpad --user-data-dir=$(mktemp -d)'
+alias chrnc='google-chrome  --disable-web-security --no-first-run --no-default-browser-check --disable-breakpad --user-data-dir=$(mktemp -d)'
 alias plz='sudo $(fc -ln -1)'
 # Show Disk Use of subdirectories, sort by size
 alias duss='du -d 1 -h | sort -hr | egrep -v ^0'
@@ -527,3 +535,6 @@ function wipe() {
 }
 # Store ssh key passwords in ssh-agent
 # ps -p $SSH_AGENT_PID > /dev/null || eval $(ssh-agent -s)
+
+# To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
+[[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
