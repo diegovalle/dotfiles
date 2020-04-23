@@ -135,8 +135,8 @@ alias nowdate='date +"%d-%m-%Y"'
 alias diff='colordiff'
 alias ports='netstat -tulanp'
 alias cd..='cd ..'
-alias l='ls -laF --group-directories-first'
-alias ll='ls -1aF --group-directories-first'
+alias l='ls -laF --human-readable --group-directories-first'
+alias ll='ls -1aF --human-readable --group-directories-first'
 alias ..='cd ..'
 alias ...='cd ../..'
 alias ....='cd ../../..'
@@ -345,7 +345,7 @@ rproject() {
   cd "$1" || exit
   cat >> R/packages.R<<EOF
 ## Auto-Install the following packages
-.packs <- c("ggplot2")
+.packs <- c("tidyverse")
 .success <- suppressWarnings(sapply(.packs, require, character.only = TRUE))
 if (length(names(.success)[!.success])) {
   install.packages(names(.success)[!.success])
@@ -437,7 +437,7 @@ mkbash() {
         return 1
     fi
     cat >> "$1" <<EOF
-#!/bin/bash
+#!/usr/bin/env bash
 # Exit on error, undefined and prevent pipeline errors,
 # use '|| true' on commands that intentionally exit non-zero
 set -euo pipefail
@@ -446,7 +446,7 @@ readonly LOCALDIR="\$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 IFS=$'\n\t'
 
 main() {
-    local \$VAR=123
+    local VAR=123
 }
 
 main
