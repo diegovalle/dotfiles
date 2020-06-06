@@ -27,3 +27,4 @@ fi
 export PATH="$HOME/.cargo/bin:$PATH"
 
 export PATH="$HOME/.poetry/bin:$PATH"
+export NPM_CONFIG_PREFIX=~/.npm-global
