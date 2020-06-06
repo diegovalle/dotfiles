@@ -150,8 +150,8 @@ alias nowdate='date +"%d-%m-%Y"'
 alias diff='colordiff'
 alias ports='netstat -tulanp'
 alias cd..='cd ..'
-alias l='ls -laF --group-directories-first'
-alias ll='ls -1aF --group-directories-first'
+alias l='ls -laF --human-readable --group-directories-first'
+alias ll='ls -1aF --human-readable --group-directories-first'
 alias ..='cd ..'
 alias ...='cd ../..'
 alias ....='cd ../../..'
@@ -525,3 +525,8 @@ else
     fi
 fi
 alias ic="ibmcloud"
+
+export PATH="$HOME/.pyenv/bin:$PATH"
+eval "$(pyenv init -)"
+eval "$(pyenv virtualenv-init -)"
+umask 077

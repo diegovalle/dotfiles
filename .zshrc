@@ -201,8 +201,8 @@ alias gsts='git stash save'
 function glf() { git log --all --grep="$1"; }
 
 # secret stuff
-[ -f ~/.zsh_secrets ] &&
-    source ~/.zsh_secrets
+[ -f ~/.zsh_secrets.sh ] &&
+    source ~/.zsh_secrets.sh
 
 y() {
     youtube-dl --write-sub --sub-lang en --convert-subs srt "$@"
@@ -227,6 +227,7 @@ export PATH="$HOME/.rbenv/bin:$PATH"
 #eval "$(rbenv init -)" > /dev/null
 
 # virtualenv
+export VIRTUALENVWRAPPER_PYTHON=/usr/bin/python3
 if VENVWRAP=$(command -v "virtualenvwrapper.sh"); then
     source "$VENVWRAP"
 else
@@ -538,3 +539,9 @@ function wipe() {
 
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
+
+
+export PATH="$HOME/.pyenv/bin:$PATH"
+eval "$(pyenv init -)"
+eval "$(pyenv virtualenv-init -)"
+umask 077
