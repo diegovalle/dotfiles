@@ -545,4 +545,4 @@ function wipe() {
 export PATH="$HOME/.pyenv/bin:$PATH"
 eval "$(pyenv init -)"
 eval "$(pyenv virtualenv-init -)"
-umask 077
+export PATH=$HOME/.npm-global/bin:$PATH
