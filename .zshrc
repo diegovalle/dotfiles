@@ -228,6 +228,7 @@ export PATH="$HOME/.rbenv/bin:$PATH"
 
 # virtualenv
 export VIRTUALENVWRAPPER_PYTHON=/usr/bin/python3
+export WORKON_HOME=$HOME/.virtualenvs
 if VENVWRAP=$(command -v "virtualenvwrapper.sh"); then
     source "$VENVWRAP"
 else
