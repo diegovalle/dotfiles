@@ -345,7 +345,7 @@ rproject() {
   mkdir -p "$1/cache"
   mkdir -p "$1/meta"
   cd "$1" || exit
-  cat >> R/packages.R<<EOF
+  cat >> R/packages.R<<'EOF'
 ## Auto-Install the following packages
 .packs <- c("tidyverse")
 .success <- suppressWarnings(sapply(.packs, require, character.only = TRUE))
@@ -356,13 +356,13 @@ if (length(names(.success)[!.success])) {
 
 options(stringsAsFactors = FALSE)
 EOF
-  cat >> main.R<<EOF
+  cat >> main.R<<'EOF'
 ## This program does
 
 source("R/packages.R")
 ## source("R/functions.R")
 EOF
-  cat >> .gitignore<<EOF
+  cat >> .gitignore<<'EOF'
 # RStudio files
 .Rproj.user/
 # Don't store intermediate files
@@ -393,7 +393,7 @@ mkmakefile() {
         echo "there's already a Makefile in this directory"
         return 1
     fi
-    cat >> Makefile<<EOF
+    cat >> Makefile<<'EOF'
 SHELL := bash
 .ONESHELL:
 .SHELLFLAGS := -eu -o pipefail -c
@@ -438,7 +438,7 @@ mkbash() {
         echo "there's already a file with that name"
         return 1
     fi
-    cat >> "$1" <<EOF
+    cat >> "$1" <<'EOF'
 #!/usr/bin/env bash
 # Exit on error, undefined and prevent pipeline errors,
 # use '|| true' on commands that intentionally exit non-zero
