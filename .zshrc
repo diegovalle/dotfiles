@@ -400,10 +400,18 @@ SHELL := bash
 .DELETE_ON_ERROR:
 
 # default rule
-all: out/image-id
+.DEFAULT_GOAL := help
+.PHONY: help
+
+help:
+	@grep -E '^[a-zA-Z0-9_-]+:.*?## .*$$' $(MAKEFILE_LIST) \
+	| sed -n 's/^\(.*\): \(.*\)##\(.*\)/\1\3/p' \
+	| column -t  -s ' '
+
+all: out/image-id ## all
 .PHONY: build
 
-clean:
+clean: ## clean
 > rm -rf .cache
 > rm -rf out
 .PHONY: clean
@@ -546,3 +554,6 @@ export PATH="$HOME/.pyenv/bin:$PATH"
 eval "$(pyenv init -)"
 eval "$(pyenv virtualenv-init -)"
 export PATH=$HOME/.npm-global/bin:$PATH
+export FLYCTL_INSTALL="/home/diego/.fly"
+export PATH="$FLYCTL_INSTALL/bin:$PATH"
+export FLYCTL_INSTALL="$HOME/bin"
