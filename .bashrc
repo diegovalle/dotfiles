@@ -530,3 +530,14 @@ export PATH="$HOME/.pyenv/bin:$PATH"
 eval "$(pyenv init -)"
 eval "$(pyenv virtualenv-init -)"
 umask 077
+
+# npm install global to homedir
+export PATH=$HOME/.npm-global/bin:$PATH
+
+# fly.io
+export FLYCTL_INSTALL="/home/diego/.fly"
+export PATH="$FLYCTL_INSTALL/bin:$PATH"
+export FLYCTL_INSTALL="$HOME/bin"
+
+# ssh with yubikey
+export SSH_AUTH_SOCK="${XDG_RUNTIME_DIR}/yubikey-agent/yubikey-agent.sock"

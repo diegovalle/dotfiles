@@ -5,7 +5,7 @@
 # shellcheck source=/dev/null
 
 export TERM="xterm-256color"
-DEFAULT_USER=diego
+DEFAULT_USER="$USER"
 
 #No gatsby telemetry
 export GATSBY_TELEMETRY_DISABLED=1
@@ -222,7 +222,7 @@ function zshaddhistory() {
 
 # Customize to your needs...
 export GOPATH=~/go
-export PATH=/home/diego/apps:/home/diego/.local/bin:$GOPATH/bin:$PATH:/usr/local/go/bin:/home/diego/apps/google_appengine:/home/diego/bin:/usr/lib/lightdm/lightdm:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games
+export PATH=$HOME/apps:$HOME/.local/bin:$GOPATH/bin:$PATH:/usr/local/go/bin:$HOME/apps/google_appengine:$HOME/bin:/usr/lib/lightdm/lightdm:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games
 export PATH="$HOME/.rbenv/bin:$PATH"
 #eval "$(rbenv init -)" > /dev/null
 
@@ -236,17 +236,17 @@ else
 fi
 
 # This loads nvm
-[ -s "/home/diego/.nvm/nvm.sh" ] && . "/home/diego/.nvm/nvm.sh" ||
+[ -s "$HOME/.nvm/nvm.sh" ] && . "$HOME/.nvm/nvm.sh" ||
         echo install nvm
 
 # The next line updates PATH for the Google Cloud SDK.
-[ -f /home/diego/apps/google-cloud-sdk/path.zsh.inc ] &&
-    source '/home/diego/apps/google-cloud-sdk/path.zsh.inc' ||
+[ -f "$HOME/apps/google-cloud-sdk/path.zsh.inc" ] &&
+    source "$HOME/apps/google-cloud-sdk/path.zsh.inc" ||
         echo install google cloud sdk
 
 # The next line enables shell command completion for gcloud.
-[ -f /home/diego/apps/google-cloud-sdk/completion.zsh.inc ] &&
-    source '/home/diego/apps/google-cloud-sdk/completion.zsh.inc' ||
+[ -f "$HOME/apps/google-cloud-sdk/completion.zsh.inc" ] &&
+    source "$HOME/apps/google-cloud-sdk/completion.zsh.inc" ||
         echo install shell for gcloud
 
 function tailc() {
@@ -432,7 +432,7 @@ EOF
 }
 
 # To change the R package directory uncomment
-#R_LIBS_SITE_USER="/home/diego/R/packages"
+#R_LIBS_SITE_USER="$HOME/R/packages"
 
 mkbash() {
     if [[ -z $1 ]]; then
@@ -549,11 +549,17 @@ function wipe() {
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
 
-
+# pyenv
 export PATH="$HOME/.pyenv/bin:$PATH"
 eval "$(pyenv init -)"
 eval "$(pyenv virtualenv-init -)"
+
+# npm install global to homedir
 export PATH=$HOME/.npm-global/bin:$PATH
-export FLYCTL_INSTALL="/home/diego/.fly"
-export PATH="$FLYCTL_INSTALL/bin:$PATH"
+
+# fly.io
 export FLYCTL_INSTALL="$HOME/bin"
+export PATH="$FLYCTL_INSTALL/bin:$PATH"
+
+# ssh with yubikey
+export SSH_AUTH_SOCK="${XDG_RUNTIME_DIR}/yubikey-agent/yubikey-agent.sock"
