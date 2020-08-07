@@ -19,7 +19,7 @@ ssh-keygen -b 4096 -f .ssh/id_rsa_{{ hostname }} -C "diegovalle.net"
 ssh-copy-id -i ~/.ssh/id_rsa.pub user@x.x.x.x
 ```
 
-## .ssh permission
+## .ssh directory permissions
 
 Should be chmod 600 for the files and chmod 0700 for the .ssh directory
 
@@ -49,7 +49,6 @@ Host *
      StrictHostKeyChecking ask
      UseRoaming no
      AddKeysToAgent yes
-     IdentitiesOnly yes
 
 Host github.com
      HostName github.com
@@ -57,11 +56,11 @@ Host github.com
      AddKeysToAgent yes
      IdentityFile ~/.ssh/id_ed25519_github
 
+# Use yubikey-agent for bitbucket.org
 Host bitbucket.org
      HostName bitbucket.org
      User git
-     AddKeysToAgent yes
-     IdentityFile ~/.ssh/id_ed25519_bitbucket
+     IdentityAgent SSH_AUTH_SOCK
 
 Host gitlab.com
      HostName gitlab.com
@@ -93,7 +92,7 @@ HashKnownHosts yes
 # https://infosec.mozilla.org/guidelines/openssh.html
 HostKeyAlgorithms ssh-ed25519-cert-v01@openssh.com,ssh-rsa-cert-v01@openssh.com,ssh-ed25519,ssh-rsa,ecdsa-sha2-nistp521-cert-v01@openssh.com,ecdsa-sha2-nistp384-cert-v01@openssh.com,ecdsa-sha2-nistp256-cert-v01@openssh.com,ecdsa-sha2-nistp521,ecdsa-sha2-nistp384,ecdsa-sha2-nistp256
 
-# These can be removed gor compatibility (but less security)
+# These can be removed for compatibility (but less security)
 KexAlgorithms curve25519-sha256@libssh.org,ecdh-sha2-nistp521,ecdh-sha2-nistp384,ecdh-sha2-nistp256,diffie-hellman-group-exchange-sha256
 MACs hmac-sha2-512-etm@openssh.com,hmac-sha2-256-etm@openssh.com,umac-128-etm@openssh.com,hmac-sha2-512,hmac-sha2-256,umac-128@openssh.com
 Ciphers chacha20-poly1305@openssh.com,aes256-gcm@openssh.com,aes128-gcm@openssh.com,aes256-ctr,aes192-ctr,aes128-ctr
