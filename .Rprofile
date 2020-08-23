@@ -138,13 +138,13 @@ options(
 ## .libPaths("/home/diego/R/rpackages")
 ## message("Using library: ", .libPaths()[1])
 
-cat(
-    R.Version()$version.string,
-    "Library Path:",
-    if (Sys.getenv("R_LIBS_SITE_USER") == "") {.libPaths()},
-    "",
-    "Working Directory:",
-    normalizePath(getwd()),
-    "",
-    sep = "\n"
-)
+#cat(
+#    R.Version()$version.string,
+#    "Library Path:",
+#    if (Sys.getenv("R_LIBS_SITE_USER") == "") {.libPaths()},
+#    "",
+#    "Working Directory:",
+#    normalizePath(getwd()),
+#    "",
+#    sep = "\n"
+#)
