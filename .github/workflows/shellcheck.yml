@@ -11,13 +11,17 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
-    - name: Run ShellCheck
-      uses: ludeeus/action-shellcheck@master
-      with:
-        ignore: .zprofile
-    - name: sehllcheck
+    - name: install
+      run: |
+        export scversion="stable" # or "v0.4.7", or "latest"
+        wget -qO- "https://storage.googleapis.com/shellcheck/shellcheck-"${scversion}".linux.x86_64.tar.xz" | tar -xJv
+        sudo cp shellcheck-"${scversion}"/shellcheck /usr/bin/
+        shellcheck --version
+        git clone https://github.com/syngan/vim-vimlint /tmp/vim-vimlint
+        git clone https://github.com/ynkdir/vim-vimlparser /tmp/vim-vimlparser
+    - name: shellcheck
       run: shellcheck .bashrc .profile .bash_profile .zshrc bootstrap
-    - name: check vimrc     
+    - name: check vimrc
       run: sh /tmp/vim-vimlint/bin/vimlint.sh -l /tmp/vim-vimlint -p /tmp/vim-vimlparser -v .vimrc
-    - name: bootstrap
+    - name: check bootstrap procedure
       run: ./bootstrap
