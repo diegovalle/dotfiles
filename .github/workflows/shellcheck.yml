@@ -1,0 +1,21 @@
+on:
+  push:
+    branch:
+      - master
+
+name: 'Trigger: Push action'
+
+jobs:
+  shellcheck:
+    name: Shellcheck
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Run ShellCheck
+      uses: ludeeus/action-shellcheck@master
+    - name: sehllcheck
+      run: shellcheck .bashrc .profile .bash_profile .zshrc bootstrap
+    - name: check vimrc     
+      run: sh /tmp/vim-vimlint/bin/vimlint.sh -l /tmp/vim-vimlint -p /tmp/vim-vimlparser -v .vimrc
+    - name: bootstrap
+      run: ./bootstrap
