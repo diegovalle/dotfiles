@@ -33,3 +33,8 @@
 	br = branch
 	co = checkout
 	df = diff
+	
+[init]
+    defaultBranch = master
+	
+
