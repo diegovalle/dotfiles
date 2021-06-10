@@ -9,6 +9,7 @@ DEFAULT_USER="$USER"
 
 #No gatsby telemetry
 export GATSBY_TELEMETRY_DISABLED=1
+export DOTNET_CLI_TELEMETRY_OPTOUT=1
 
 # Path to your oh-my-zsh configuration.
 ZSH=$HOME/.oh-my-zsh
