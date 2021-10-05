@@ -5,11 +5,21 @@
 # shellcheck source=/dev/null
 
 export TERM="xterm-256color"
-DEFAULT_USER="$USER"
+export DEFAULT_USER="$USER"
 
-#No gatsby telemetry
+# No telemetry
 export GATSBY_TELEMETRY_DISABLED=1
 export DOTNET_CLI_TELEMETRY_OPTOUT=1
+export DO_NOT_TRACK=1
+export AZURE_CORE_COLLECT_TELEMETRY=0
+export DOTNET_CLI_TELEMETRY_OPTOUT=1
+export STNOUPGRADE=1
+export HOMEBREW_NO_ANALYTICS=1
+export SAM_CLI_TELEMETRY=0
+
+bindkey '^R' history-incremental-pattern-search-backward
+bindkey '^S' history-incremental-pattern-search-forward
+
 
 # Path to your oh-my-zsh configuration.
 ZSH=$HOME/.oh-my-zsh
@@ -206,7 +216,7 @@ function glf() { git log --all --grep="$1"; }
     source ~/.zsh_secrets.sh
 
 y() {
-    youtube-dl --write-sub --sub-lang en --convert-subs srt "$@"
+    yt-dlp --write-sub --sub-lang en --convert-subs srt "$@"
 }
 
 # Don' store certain commands in history
@@ -360,8 +370,11 @@ EOF
   cat >> main.R<<'EOF'
 ## This program does
 
-source("R/packages.R")
-## source("R/functions.R")
+main <- function() {
+  source("R/packages.R")
+  ## source("R/functions.R")
+}
+main()
 EOF
   cat >> .gitignore<<'EOF'
 # RStudio files
@@ -452,9 +465,9 @@ mkbash() {
 # Exit on error, undefined and prevent pipeline errors,
 # use '|| true' on commands that intentionally exit non-zero
 set -euo pipefail
-# The directory from which the script is running
-readonly LOCALDIR="\$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 IFS=$'\n\t'
+# The directory from which the script is running
+readonly LOCAL_DIR="$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
 
 main() {
     local VAR=123
