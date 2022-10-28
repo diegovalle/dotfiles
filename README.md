@@ -18,7 +18,7 @@ Based on creating a bare git repo as described in: [https://news.ycombinator.com
 
 ## Install
 
-by running ```bootstrap``` or ```bash <(curl -fsSL https://git.io/diegobootstrap)```
+by running ```bootstrap``` or ```bash <(curl -fsSL https://diegovalle.net/dotfiles)```
 
 ```bash
 #!/bin/bash
