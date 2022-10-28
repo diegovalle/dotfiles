@@ -27,4 +27,8 @@ fi
 export PATH="$HOME/.cargo/bin:$PATH"
 
 export PATH="$HOME/.poetry/bin:$PATH"
-export NPM_CONFIG_PREFIX=~/.npm-global
+
+
+# Added by Toolbox App
+export PATH="$PATH:/home/diego/.local/share/JetBrains/Toolbox/scripts"
+

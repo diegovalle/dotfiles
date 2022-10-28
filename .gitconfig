@@ -17,11 +17,12 @@
 	
 [core]
 	excludesfile = /home/diego/.gitignore_global
-	hooksPath = /home/diego/.githooks
 	editor = vim
 	
 [alias]
 	fixup = "!f() { TARGET=$(git rev-parse "$1"); git commit --fixup=$TARGET ${@:2} && EDITOR=true git rebase -i --autostash --autosquash $TARGET^; }; f"
+        #pull_force = !git fetch --all && git reset --hard HEAD && git merge @{u}
+        #pull_stash = !"git fetch --all; git stash; git merge @{u}; git stash pop"
 	
 [log]
   # Better date formats in logs
