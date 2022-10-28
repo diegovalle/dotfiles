@@ -20,7 +20,9 @@ jobs:
         git clone https://github.com/syngan/vim-vimlint /tmp/vim-vimlint
         git clone https://github.com/ynkdir/vim-vimlparser /tmp/vim-vimlparser
     - name: shellcheck
-      run: shellcheck .bashrc .profile .bash_profile .zshrc bootstrap
+      run: shellcheck .bashrc .profile .bash_profile bootstrap
+    - name: shellcheck .zshrc
+      run: shellcheck -s bash .zshrc
     - name: check vimrc
       run: sh /tmp/vim-vimlint/bin/vimlint.sh -l /tmp/vim-vimlint -p /tmp/vim-vimlparser -v .vimrc
     - name: check bootstrap procedure
