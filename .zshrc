@@ -23,14 +23,18 @@ bindkey '^S' history-incremental-pattern-search-forward
 
 # Path to your oh-my-zsh configuration.
 ZSH=$HOME/.oh-my-zsh
-if [ ! -d "$ZSH" ]; then
-    git clone git://github.com/robbyrussell/oh-my-zsh.git "$ZSH"
-    #git clone https://github.com/bhilburn/powerlevel9k.git ~/.oh-my-zsh/custom/themes/powerlevel9k
-    git clone https://github.com/romkatv/powerlevel10k.git ~/.oh-my-zsh/custom/themes/powerlevel10k
-fi
-if [ ! -d "$ZSH"/custom/plugins/zsh-autosuggestions/ ]; then
-    git clone https://github.com/zsh-users/zsh-autosuggestions "${ZSH_CUSTOM:-~/.oh-my-zsh/custom}"/plugins/zsh-autosuggestions
-fi
+# if [ ! -d "$ZSH" ]; then
+#     git clone git://github.com/robbyrussell/oh-my-zsh.git "$ZSH"
+#     #git clone https://github.com/bhilburn/powerlevel9k.git ~/.oh-my-zsh/custom/themes/powerlevel9k
+#     git clone https://github.com/romkatv/powerlevel10k.git ~/.oh-my-zsh/custom/themes/powerlevel10k
+# fi
+# if [ ! -d "$ZSH"/custom/plugins/zsh-autosuggestions/ ]; then
+#     git clone https://github.com/zsh-users/zsh-autosuggestions "${ZSH_CUSTOM:-~/.oh-my-zsh/custom}"/plugins/zsh-autosuggestions
+# fi
+# if [ ! -d "$ZSH"/custom/plugins/zsh-histdb ]; then
+#     git clone https://github.com/larkery/zsh-histdb "$ZSH"/custom/plugins/zsh-histdb
+# fi
+
 # Enable Powerlevel10k instant prompt. Should stay close to the top of ~/.zshrc.
 # Initialization code that may require console input (password prompts, [y/n]
 # confirmations, etc.) must go above this block, everything else may go below.
@@ -47,26 +51,29 @@ ZSH_THEME="powerlevel10k/powerlevel10k"
 COMPLETION_WAITING_DOTS="true"
 
 # Only show three dir levels in the prompt
-POWERLEVEL9K_SHORTEN_DIR_LENGTH=3
-POWERLEVEL9K_PROMPT_ON_NEWLINE=true
-POWERLEVEL9K_PROMPT_ADD_NEWLINE=true
-POWERLEVEL9K_MULTILINE_FIRST_PROMPT_PREFIX=""
-POWERLEVEL9K_MULTILINE_LAST_PROMPT_PREFIX=""
+POWERLEVEL10K_SHORTEN_DIR_LENGTH=3
+POWERLEVEL10K_PROMPT_ON_NEWLINE=true
+POWERLEVEL10K_PROMPT_ADD_NEWLINE=true
+POWERLEVEL10K_MULTILINE_FIRST_PROMPT_PREFIX=""
+POWERLEVEL10K_MULTILINE_LAST_PROMPT_PREFIX=""
 
-POWERLEVEL9K_LEFT_PROMPT_ELEMENTS=(dir dir_writable vcs virtualenv)
-POWERLEVEL9K_RIGHT_PROMPT_ELEMENTS=(status root_indicator background_jobs command_execution_time)
+POWERLEVEL10K_LEFT_PROMPT_ELEMENTS=(dir dir_writable vcs virtualenv)
+POWERLEVEL10K_RIGHT_PROMPT_ELEMENTS=(status root_indicator background_jobs command_execution_time)
 
-POWERLEVEL9K_DIR_WRITABLE_FORBIDDEN_FOREGROUND='black'
-POWERLEVEL9K_DIR_WRITABLE_FORBIDDEN_BACKGROUND='magenta'
-POWERLEVEL9K_COMMAND_EXECUTION_TIME_BACKGROUND='222'
-POWERLEVEL9K_COMMAND_EXECUTION_TIME_FOREGROUND='black'
+POWERLEVEL10K_DIR_WRITABLE_FORBIDDEN_FOREGROUND='black'
+POWERLEVEL10K_DIR_WRITABLE_FORBIDDEN_BACKGROUND='magenta'
+POWERLEVEL10K_COMMAND_EXECUTION_TIME_BACKGROUND='222'
+POWERLEVEL10K_COMMAND_EXECUTION_TIME_FOREGROUND='black'
 
 # Which plugins would you like to load? (plugins can be found in ~/.oh-my-zsh/plugins/*)
 # Custom plugins may be added to ~/.oh-my-zsh/custom/plugins/
 # Example format: plugins=(rails git textmate ruby lighthouse)
-plugins=(virtualenv zsh-autosuggestions history-substring-search)
+
+plugins=(virtualenv zsh-autosuggestions zsh-history-substring-search zsh-syntax-highlighting)
 
 source "$ZSH"/oh-my-zsh.sh
+source "$ZSH"/custom/plugins/zsh-histdb/sqlite-history.zsh
+autoload -Uz add-zsh-hook
 
 ### Extra ZSH options ###
 # If querying the user before executing `rm *' or `rm
@@ -162,12 +169,15 @@ alias untarxz='tar -xJf'
 alias grep='grep --color=auto'
 alias fx='firefox --new-instance --profile $(mktemp -d)'
 alias chr='google-chrome --no-first-run --no-default-browser-check --disable-breakpad --user-data-dir=$(mktemp -d)'
-alias chrnc='google-chrome  --disable-web-security --no-first-run --no-default-browser-check --disable-breakpad --user-data-dir=$(mktemp -d)'
+alias chrncors='google-chrome  --disable-web-security --no-first-run --no-default-browser-check --disable-breakpad --user-data-dir=$(mktemp -d)'
 alias plz='sudo $(fc -ln -1)'
 # Show Disk Use of subdirectories, sort by size
 alias duss='du -d 1 -h | sort -hr | egrep -v ^0'
 
 alias dotfiles='/usr/bin/git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME'
+
+alias npm='aa-exec -p node_sandbox -- npm'
+alias gatsby='aa-exec -p node_sandbox -- gatsby'
 
 # ----------------------
 # Git Aliases
@@ -246,19 +256,15 @@ else
     echo "Please install virutalenvwrapper"
 fi
 
-# This loads nvm
-[ -s "$HOME/.nvm/nvm.sh" ] && . "$HOME/.nvm/nvm.sh" ||
-        echo install nvm
-
 # The next line updates PATH for the Google Cloud SDK.
-[ -f "$HOME/apps/google-cloud-sdk/path.zsh.inc" ] &&
-    source "$HOME/apps/google-cloud-sdk/path.zsh.inc" ||
-        echo install google cloud sdk
+# [ -f "$HOME/apps/google-cloud-sdk/path.zsh.inc" ] &&
+#    source "$HOME/apps/google-cloud-sdk/path.zsh.inc" ||
+#        echo install google cloud sdk
 
 # The next line enables shell command completion for gcloud.
-[ -f "$HOME/apps/google-cloud-sdk/completion.zsh.inc" ] &&
-    source "$HOME/apps/google-cloud-sdk/completion.zsh.inc" ||
-        echo install shell for gcloud
+# [ -f "$HOME/apps/google-cloud-sdk/completion.zsh.inc" ] &&
+#     source "$HOME/apps/google-cloud-sdk/completion.zsh.inc" ||
+#        echo install shell for gcloud
 
 function tailc() {
     tail -F "$1" |
@@ -465,27 +471,37 @@ mkbash() {
 # Exit on error, undefined and prevent pipeline errors,
 # use '|| true' on commands that intentionally exit non-zero
 set -euo pipefail
+if [[ "${TRACE-0}" == "1" ]]; then set -o xtrace; fi
 IFS=$'\n\t'
 # The directory from which the script is running
 readonly LOCAL_DIR="$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
+
+if [[ "${1-}" =~ ^-*h(elp)?$ ]]; then
+    echo 'Usage: ./script.sh arg1 arg2
+
+What the bash script does.
+
+'
+    exit
+fi
 
 main() {
     local VAR=123
 }
 
-main
+main "$@"
 EOF
 }
 
 # Show to which directory we are changing into
-cd () {
-  if builtin cd "$@"; then
-      echo "$OLDPWD -> $PWD"
-  fi
-}
+# cd () {
+#   if builtin cd "$@"; then
+#       echo "$OLDPWD -> $PWD"
+#   fi
+# }
 
 # Create a symlink to the .git/hooks directory so
-# that I can be able to store githooks in version control
+# that I am be able to store githooks in version control
 install_hook() {
     if [[ -z $1 ]]; then
         echo Usage: install_hook hook.sh
@@ -502,6 +518,10 @@ install_hook() {
         echo "No such file"
         return 1
     fi
+}
+
+function replace() {
+    rg "$1" --files-with-matches | tee /dev/tty | xargs sed -i "s/$1/$2/g"
 }
 
 function cheat() {
@@ -577,3 +597,13 @@ export PATH="$FLYCTL_INSTALL/bin:$PATH"
 
 # ssh with yubikey
 export SSH_AUTH_SOCK="${XDG_RUNTIME_DIR}/yubikey-agent/yubikey-agent.sock"
+
+# This loads nvm
+unset NPM_CONFIG_PREFIX
+export NVM_DIR="$HOME/.nvm"
+[ -s "$HOME/.nvm/nvm.sh" ] && . "$HOME/.nvm/nvm.sh" ||
+        echo install nvm
+# This loads nvm bash_completion
+[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
+
+export PATH="$HOME/.yarn/bin:$HOME/.config/yarn/global/node_modules/.bin:$PATH"
