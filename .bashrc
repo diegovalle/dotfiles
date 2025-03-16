@@ -541,3 +541,8 @@ export FLYCTL_INSTALL="$HOME/bin"
 
 # ssh with yubikey
 export SSH_AUTH_SOCK="${XDG_RUNTIME_DIR}/yubikey-agent/yubikey-agent.sock"
+. "/home/diego/.deno/env"
+. "$HOME/.atuin/bin/env"
+
+[[ -f ~/.bash-preexec.sh ]] && source ~/.bash-preexec.sh
+eval "$(atuin init bash)"

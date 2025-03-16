@@ -1,3 +1,5 @@
+# Add deno completions to search path
+if [[ ":$FPATH:" != *":/home/diego/.zsh/completions:"* ]]; then export FPATH="/home/diego/.zsh/completions:$FPATH"; fi
 # shellcheck disable=SC2034
 # shellcheck disable=SC2029
 # shellcheck disable=SC2162
@@ -5,16 +7,19 @@
 
 export TERM="xterm-256color"
 export DEFAULT_USER="$USER"
+export TZ=:/etc/localtime
 
 # No telemetry
 export GATSBY_TELEMETRY_DISABLED=1
 export DOTNET_CLI_TELEMETRY_OPTOUT=1
 export DO_NOT_TRACK=1
+export GOTELEMETRY=off
 export AZURE_CORE_COLLECT_TELEMETRY=0
 export DOTNET_CLI_TELEMETRY_OPTOUT=1
 export STNOUPGRADE=1
 export HOMEBREW_NO_ANALYTICS=1
 export SAM_CLI_TELEMETRY=0
+export PYTHON_KEYRING_BACKEND=keyring.backends.null.Keyring
 
 bindkey '^R' history-incremental-pattern-search-backward
 bindkey '^S' history-incremental-pattern-search-forward
@@ -68,10 +73,10 @@ POWERLEVEL10K_COMMAND_EXECUTION_TIME_FOREGROUND='black'
 # Custom plugins may be added to ~/.oh-my-zsh/custom/plugins/
 # Example format: plugins=(rails git textmate ruby lighthouse)
 
-plugins=(virtualenv zsh-autosuggestions zsh-history-substring-search zsh-syntax-highlighting)
+plugins=(virtualenv zsh-autosuggestions zsh-syntax-highlighting direnv)
 
 source "$ZSH"/oh-my-zsh.sh
-source "$ZSH"/custom/plugins/zsh-histdb/sqlite-history.zsh
+#source "$ZSH"/custom/plugins/zsh-histdb/sqlite-history.zsh
 autoload -Uz add-zsh-hook
 
 ### Extra ZSH options ###
@@ -84,7 +89,10 @@ setopt RM_STAR_WAIT
 
 # Commands prefaced by a space aren't saved to .zsh_history
 export HISTCONTROL=ignorespace
-export HISTFILESIZE=100000
+export HISTFILESIZE=1000000
+export FZF_DEFAULT_COMMAND='ag --hidden -g ""'
+#export HIST_STAMPS="yyyy-mm-dd"
+setopt EXTENDED_HISTORY
 
 # Set to this to use case-sensitive completion
 # CASE_SENSITIVE="true"
@@ -134,7 +142,7 @@ alias su='sudo -H -s'
 ### VirtualEnv ###
 # pip should only run if there is a virtualenv currently activated
 # prevents accidentally installing packages without a virtualenv
-#export PIP_REQUIRE_VIRTUALENV=true
+export PIP_REQUIRE_VIRTUALENV=true
 # create syspip workaround
 #syspip(){
 #   PIP_REQUIRE_VIRTUALENV="" pip "$@"
@@ -146,7 +154,7 @@ alias su='sudo -H -s'
 alias mkdir='mkdir -pv'
 # install  colordiff package :)
 alias path='echo -e ${PATH//:/\\n}'
-alias now='date +"%T'
+alias now='date +"%T"'
 alias nowtime=now
 alias nowdate='date +"%d-%m-%Y"'
 alias diff='colordiff'
@@ -177,7 +185,6 @@ alias dotfiles='/usr/bin/git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME'
 
 alias npm='aa-exec -p node_sandbox -- npm'
 alias gatsby='aa-exec -p node_sandbox -- gatsby'
-
 # ----------------------
 # Git Aliases
 # ----------------------
@@ -192,8 +199,8 @@ alias gcm='git commit --message'
 alias gcf='git commit --fixup'
 alias gco='git checkout'
 alias gcob='git checkout -b'
-alias gcom='git checkout master'
-alias gcod='git checkout develop'
+alias gcm='git checkout master'
+alias gcd='git checkout develop'
 alias gd='git diff'
 alias gda='git diff HEAD'
 alias gi='git init'
@@ -249,8 +256,8 @@ export PATH="$HOME/.rbenv/bin:$PATH"
 # virtualenv
 export VIRTUALENVWRAPPER_PYTHON=/usr/bin/python3
 export WORKON_HOME=$HOME/.virtualenvs
-if VENVWRAP=$(command -v "virtualenvwrapper.sh"); then
-    source "$VENVWRAP"
+if [ -e "/usr/share/virtualenvwrapper/virtualenvwrapper.sh" ]; then
+    source "/usr/share/virtualenvwrapper/virtualenvwrapper.sh"
 else
     echo "Please install virutalenvwrapper"
 fi
@@ -583,9 +590,9 @@ function wipe() {
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
 
 # pyenv
-export PATH="$HOME/.pyenv/bin:$PATH"
-eval "$(pyenv init -)"
-eval "$(pyenv virtualenv-init -)"
+#export PATH="$HOME/.pyenv/bin:$PATH"
+#eval "$(pyenv init -)"
+#eval "$(pyenv virtualenv-init -)"
 
 # npm install global to homedir
 export PATH=$HOME/.npm-global/bin:$PATH
@@ -606,3 +613,11 @@ export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
 
 export PATH="$HOME/.yarn/bin:$HOME/.config/yarn/global/node_modules/.bin:$PATH"
+
+# Turso
+export PATH="$PATH:/home/diego/.turso"
+. "/home/diego/.deno/env"
+
+. "$HOME/.atuin/bin/env"
+
+eval "$(atuin init zsh)"

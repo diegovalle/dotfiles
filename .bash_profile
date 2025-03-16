@@ -18,3 +18,5 @@ if [ -f ~/.bashrc ]; then
 fi
 
 export PATH="$HOME/.poetry/bin:$PATH"
+. "/home/diego/.deno/env"
+. "$HOME/.atuin/bin/env"
