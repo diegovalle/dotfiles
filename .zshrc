@@ -1,9 +1,7 @@
+# shellcheck disable=SC2034,SC1091,SC2029,SC2162
+# shellcheck source=/dev/null
 # Add deno completions to search path
 if [[ ":$FPATH:" != *":/home/diego/.zsh/completions:"* ]]; then export FPATH="/home/diego/.zsh/completions:$FPATH"; fi
-# shellcheck disable=SC2034
-# shellcheck disable=SC2029
-# shellcheck disable=SC2162
-# shellcheck source=/dev/null
 
 export TERM="xterm-256color"
 export DEFAULT_USER="$USER"
@@ -560,7 +558,7 @@ function wipe() {
     if [[ -z "$1" ]]; then
         echo Usage: wipe file|directory
     fi
-    read "REPLY?Are you sure you want to delete and wipe $*? [y/n]"
+    read -r "REPLY?Are you sure you want to delete and wipe $*? [y/n]"
     echo ""
     if [[ "$REPLY" == "y" ]]; then
         for PASSED in "$@"
