@@ -326,7 +326,7 @@ function tailc() {
         done
 }
 
-# shellcheck disable=SC2317
+# shellcheck disable=SC2317,SC2329
 function sshtmux() {
   if [[ -z $1 ]]; then
     echo "Specify a host"
