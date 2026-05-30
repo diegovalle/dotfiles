@@ -2,3 +2,4 @@
 # Sys.setenv(APIID = "secret")
 
 # R_LIBS_SITE_USER=~/R/packages # For Ubuntu, R_LIBS_SITE for others
+#R_LIBS_SITE_USER==/home/diego/R/rpackages

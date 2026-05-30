@@ -1,7 +1,7 @@
 [user]
-	name = diego
+	name = Diego Valle-Jones
 	email = git@diegovalle.net
-	signingkey = 55BD9EC4CD81C252
+	signingkey = /home/diego/.ssh/yubi5main
 	
 [commit]
 	gpgSign = false
@@ -41,3 +41,9 @@
 
 [credential]
 	helper = cache
+[gpg]
+	format = ssh
+[gpg "ssh"]
+	allowedSignersFile = /home/diego/.ssh/allowed_signers
+[merge]
+	conflictStyle = diff3
