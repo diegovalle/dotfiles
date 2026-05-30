@@ -1,7 +1,12 @@
 # shellcheck disable=SC2034,SC1091,SC2029,SC2162
 # shellcheck source=/dev/null
+# zmodload zsh/zprof
 # Add deno completions to search path
-if [[ ":$FPATH:" != *":/home/diego/.zsh/completions:"* ]]; then export FPATH="/home/diego/.zsh/completions:$FPATH"; fi
+if [[ ":$FPATH:" != *":$HOME/.zsh/completions:"* ]]; then export FPATH="$HOME/.zsh/completions:$FPATH"; fi
+
+DISABLE_AUTO_UPDATE="true"
+DISABLE_MAGIC_FUNCTIONS="true"
+DISABLE_COMPFIX="true"
 
 export TERM="xterm-256color"
 export DEFAULT_USER="$USER"
@@ -158,8 +163,19 @@ alias nowdate='date +"%d-%m-%Y"'
 alias diff='colordiff'
 alias ports='netstat -tulanp'
 alias cd..='cd ..'
-alias l='ls -laF --human-readable --group-directories-first'
-alias ll='ls -1aF --human-readable --group-directories-first'
+if [ "$(uname)" = "FreeBSD" ] || [ "$(uname)" = "Darwin" ]; then
+  alias ports='sockstat -l46'
+else
+  alias ports='netstat -tulanp'
+fi
+alias cd..='cd ..'
+if ls --group-directories-first -d . >/dev/null 2>&1; then
+  alias l='ls -laF -h --group-directories-first'
+  alias ll='ls -1aF -h --group-directories-first'
+else
+  alias l='ls -laFh'
+  alias ll='ls -1aFh'
+fi
 alias ..='cd ..'
 alias ...='cd ../..'
 alias ....='cd ../../..'
@@ -178,6 +194,8 @@ alias chrncors='google-chrome  --disable-web-security --no-first-run --no-defaul
 alias plz='sudo $(fc -ln -1)'
 # Show Disk Use of subdirectories, sort by size
 alias duss='du -d 1 -h | sort -hr | egrep -v ^0'
+alias nz="nano ~/.zshrc && . ~/.zshrc"
+alias bat="batcat"
 
 alias dotfiles='/usr/bin/git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME'
 
@@ -218,12 +236,43 @@ alias gstd='git stash drop'
 alias gstl='git stash list'
 alias gstp='git stash pop'
 alias gsts='git stash save'
+alias gpom='git push origin master'
+alias gpod='git push origin develop'
+# Save temporary work
+alias gwip='git add -A; git commit -m "WIP: Work in progress"'
+# Undo temporary work
+alias gunwip='git reset HEAD~1'
+
+# ----------------------
+# Disable ssh-keygen
+# ----------------------
+# alias ssh-keygen='echo "ssh-keygen disabled, export SSH_ASKPASS=\"\" && export SSH_ASKPASS_REQUIRE=\"\" before enabling"'
+
 
 # ----------------------
 # Git Functions
 # ----------------------
 # Git log find by commit message
 function glf() { git log --all --grep="$1"; }
+
+
+function git_insight() {
+    echo "What Changes the Most"
+    echo "git log --format=format: --name-only --since=\"1 year ago\" | sort | uniq -c | sort -nr | head -20"
+    git log --format=format: --name-only --since="1 year ago" | sort | uniq -c | sort -nr | head -20
+
+    echo "Who Built This"
+    echo "git shortlog -sn --no-merges"
+    git shortlog -sn --no-merges
+
+    echo "Where Do Bugs Cluster"
+    echo "git log -i -E --grep=\"fix|bug|broken\" --name-only --format='' | sort | uniq -c | sort -nr | head -20"
+    git log -i -E --grep="fix|bug|broken" --name-only --format='' | sort | uniq -c | sort -nr | head -20
+
+    echo "Is This Project Accelerating or Dying"
+    echo "git log --format='%ad' --date=format:'%Y-%m' | sort | uniq -c"
+    git log --format='%ad' --date=format:'%Y-%m' | sort | uniq -c
+}
 
 # secret stuff
 [ -f ~/.zsh_secrets.sh ] &&
@@ -277,14 +326,32 @@ function tailc() {
         done
 }
 
+function sshtmux() {
+  if [[ -z $1 ]]; then
+    echo "Specify a host"
+    return 1
+  fi
+  ssh "$@" -t "tmux attach-session -t ssh_tmux || tmux new-session -s ssh_tmux"
+}
+
 function sshrc() {
-    if [[ -z $1 ]]; then
-        echo "Specify a host"
-        return 1
-    fi
-    local RC_DATA
-    RC_DATA=$(base64 -w 0 < "${HOME}"/.bashrc)
-    ssh -t "$@" "echo \"${RC_DATA}\" | base64 --decode > /tmp/${USER}_bashrc; bash --rcfile /tmp/${USER}_bashrc; rm /tmp/${USER}_bashrc"
+  if [[ -z $1 ]]; then
+    echo "Specify a host"
+    return 1
+  fi
+  local RC_DATA
+  RC_DATA=$(base64 <"${HOME}"/.bashrc | tr -d '\r\n')
+  ssh -t "$@" "MY_TMP_DIR=\$(mktemp -d);echo \"${RC_DATA}\" | { base64 --decode 2>/dev/null || base64 -d 2>/dev/null || base64 -D 2>/dev/null; } > \$MY_TMP_DIR/\${USER}_bashrc; bash --rcfile \$MY_TMP_DIR/\${USER}_bashrc; rm \$MY_TMP_DIR/\${USER}_bashrc"
+}
+
+function sshtmuxrc() {
+  if [[ -z $1 ]]; then
+    echo "Specify a host"
+    return 1
+  fi
+  local RC_DATA
+  RC_DATA=$(base64 <"${HOME}"/.bashrc | tr -d '\r\n')
+  ssh -t "$@" "MY_TMP_DIR=\$(mktemp -d);echo \"${RC_DATA}\" | { base64 --decode 2>/dev/null || base64 -d 2>/dev/null || base64 -D 2>/dev/null; } > \$MY_TMP_DIR/\${USER}_bashrc; tmux attach-session -t ssh_tmux \"bash --rcfile \$MY_TMP_DIR/\${USER}_bashrc\" || tmux new-session -s ssh_tmux \"bash --rcfile \$MY_TMP_DIR/\${USER}_bashrc\"; rm \$MY_TMP_DIR/\${USER}_bashrc"
 }
 
 function sshtmux() {
@@ -292,7 +359,7 @@ function sshtmux() {
         echo "Specify a host"
         return 1
     fi
-    ssh "$@" -t "tmux attach-session -t ssh_tmux || tmux new-session -s ssh_tmux"
+    ssh "$@" -t "tmux attach-session -t sshtmux || tmux new-session -s sshtmux"
 }
 
 # creates a directory and cds into it
@@ -303,34 +370,6 @@ function mkcd() {
 # lists zombie processes
 function zombie() {
     ps aux | awk '{if ($8=="Z") { print $2 }}'
-}
-
-diceware () {
-  if [[ -z $1 ]]; then
-    local NUMWORDS=10
-  else
-    local NUMWORDS=$1
-  fi
-  echo Your password has "$(echo "scale=1;$NUMWORDS * 12.9" | bc)" bits of entropy
-  shuf --random-source=/dev/urandom ~/.eff_large_wordlist.txt | \
-       head -n"$NUMWORDS" | \
-       awk -F" " '{printf "%s.", $2} END {print ""}' | \
-       sed 's/\.$//'
-
-}
-
-diceware_short () {
-  if [[ -z $1 ]]; then
-    local NUMWORDS=12
-  else
-    local NUMWORDS=$1
-  fi
-  echo Your password has "$(echo "scale=1;$NUMWORDS * 10.3" | bc)" bits of entropy
-  shuf --random-source=/dev/urandom ~/.eff_small_wordlist.txt | \
-       head -n"$NUMWORDS" | \
-       awk -F" " '{printf "%s.", $2} END {print ""}'| \
-       sed 's/\.$//'
-
 }
 
 curlbench() {
@@ -478,7 +517,8 @@ set -euo pipefail
 if [[ "${TRACE-0}" == "1" ]]; then set -o xtrace; fi
 IFS=$'\n\t'
 # The directory from which the script is running
-readonly LOCAL_DIR="$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
+LOCAL_DIR="$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
+readonly LOCAL_DIR
 
 if [[ "${1-}" =~ ^-*h(elp)?$ ]]; then
     echo 'Usage: ./script.sh arg1 arg2
@@ -526,6 +566,18 @@ install_hook() {
 
 function replace() {
     rg "$1" --files-with-matches | tee /dev/tty | xargs sed -i "s/$1/$2/g"
+}
+
+pass () {
+  local PREFIX
+  PREFIX="${PASSAGE_DIR:-$HOME/.passage/store}"
+  local FZF_DEFAULT_OPTS
+  FZF_DEFAULT_OPTS=""
+  local name
+  name="$(find "$PREFIX" -type f -name '*.age' | \
+      sed -e "s|$PREFIX/||" -e 's|\.age$||' | \
+      fzf --height 40% --reverse --no-multi)"
+  passage "${@}" "$name"
 }
 
 function cheat() {
@@ -613,9 +665,60 @@ export NVM_DIR="$HOME/.nvm"
 export PATH="$HOME/.yarn/bin:$HOME/.config/yarn/global/node_modules/.bin:$PATH"
 
 # Turso
-export PATH="$PATH:/home/diego/.turso"
-. "/home/diego/.deno/env"
+export PATH="$PATH:$HOME/.turso"
 
-. "$HOME/.atuin/bin/env"
+[[ -f "$HOME/.deno/env" ]] && . "$HOME/.deno/env"
 
-eval "$(atuin init zsh)"
+[[ -f "$HOME/.atuin/bin/env" ]] && . "$HOME/.atuin/bin/env"
+
+eval "$(uv generate-shell-completion zsh)"
+eval "$(uvx --generate-shell-completion zsh)"
+
+eval "$(atuin init zsh --disable-up-arrow)"
+typeset -g POWERLEVEL9K_INSTANT_PROMPT=off
+
+# >>> conda initialize >>>
+# !! Contents within this block are managed by 'conda init' !!
+#__conda_setup="$('$HOME/miniconda3/bin/conda' 'shell.zsh' 'hook' 2> /dev/null)"
+#if [ $? -eq 0 ]; then
+#    eval "$__conda_setup"
+#else
+#    if [ -f "$HOME/miniconda3/etc/profile.d/conda.sh" ]; then
+#        . "$HOME/miniconda3/etc/profile.d/conda.sh"
+#    else
+#        export PATH="$HOME/miniconda3/bin:$PATH"
+#    fi
+#fi
+#unset __conda_setup
+# <<< conda initialize <<<
+
+#zprof
+
+#export OPENAI_API_KEY=$(passage show OPENAI_API_KEY)
+
+
+print_error_box() {
+    local msg=" $1 "
+    local width=${#msg}
+    local border
+
+    border=$(printf '%*s' "$width" '')
+    border=${border// /─}
+
+    print -P "%F{red}┌${border}┐%f"
+    print -P "%F{red}│%f%K{red}%F{white}${msg}%f%k%F{red}│%f"
+    print -P "%F{red}└${border}┘%f"
+}
+
+typeset -g LAST_CMD=""
+
+preexec() {
+    LAST_CMD="$1"
+}
+
+precmd() {
+    local exit_code=$?
+    if (( exit_code != 0 )) && [[ "$LAST_CMD" == git* ]]; then
+        print_error_box "ERROR"
+    fi
+}
