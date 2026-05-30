@@ -326,10 +326,10 @@ function tailc() {
         done
 }
 
+# shellcheck disable=SC2317
 function sshtmux() {
   if [[ -z $1 ]]; then
     echo "Specify a host"
-    return 1
   fi
   ssh "$@" -t "tmux attach-session -t ssh_tmux || tmux new-session -s ssh_tmux"
 }
