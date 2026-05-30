@@ -3,27 +3,34 @@ on:
     branch:
       - master
 
-name: 'Trigger: Push action'
+name: "Trigger: Push action"
+
+permissions: {}
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
 
 jobs:
   shellcheck:
     name: Shellcheck
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
-    - name: install
-      run: |
-        export scversion="stable" # or "v0.4.7", or "latest"
-        wget -qO- "https://github.com/koalaman/shellcheck/releases/download/${scversion?}/shellcheck-${scversion?}.linux.x86_64.tar.xz" | tar -xJv
-        sudo cp shellcheck-"${scversion}"/shellcheck /usr/bin/
-        shellcheck --version
-        git clone https://github.com/syngan/vim-vimlint /tmp/vim-vimlint
-        git clone https://github.com/ynkdir/vim-vimlparser /tmp/vim-vimlparser
-    - name: shellcheck
-      run: shellcheck .bashrc .profile .bash_profile bootstrap
-    - name: shellcheck .zshrc
-      run: shellcheck -s bash .zshrc
-    - name: check vimrc
-      run: sh /tmp/vim-vimlint/bin/vimlint.sh -l /tmp/vim-vimlint -p /tmp/vim-vimlparser -v .vimrc
-    - name: check bootstrap procedure
-      run: ./bootstrap
+      - uses: actions/checkout@dc323e67f16fb5f7663d20ff7941f27f5809e9b6 # v2.6.2
+        with:
+          persist-credentials: false
+      - name: install
+        run: |
+          export scversion="stable" # or "v0.4.7", or "latest"
+          wget -qO- "https://github.com/koalaman/shellcheck/releases/download/${scversion?}/shellcheck-${scversion?}.linux.x86_64.tar.xz" | tar -xJv
+          sudo cp shellcheck-"${scversion}"/shellcheck /usr/bin/
+          shellcheck --version
+          git clone https://github.com/syngan/vim-vimlint /tmp/vim-vimlint
+          git clone https://github.com/ynkdir/vim-vimlparser /tmp/vim-vimlparser
+      - name: shellcheck
+        run: shellcheck .bashrc .profile .bash_profile bootstrap
+      - name: shellcheck .zshrc
+        run: shellcheck -s bash .zshrc
+      - name: check vimrc
+        run: sh /tmp/vim-vimlint/bin/vimlint.sh -l /tmp/vim-vimlint -p /tmp/vim-vimlparser -v .vimrc
+      - name: check bootstrap procedure
+        run: ./bootstrap
