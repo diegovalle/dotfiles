@@ -10,13 +10,20 @@
 export PATH="$HOME/.rbenv/bin:$PATH"
 export PATH="$HOME/.cargo/bin:$PATH"
 if [ -x "$(command -v rbenv)" ]; then
-    eval "$(rbenv init -)"
+  eval "$(rbenv init -)"
 fi
 
 if [ -f ~/.bashrc ]; then
-    source ~/.bashrc
+  source ~/.bashrc
 fi
 
 export PATH="$HOME/.poetry/bin:$PATH"
-. "/home/diego/.deno/env"
-. "$HOME/.atuin/bin/env"
+if [ -f "$HOME"/.deno/env ]; then
+  . "$HOME"/.deno/env
+fi
+if [ -f "$HOME/.atuin/bin/env" ]; then
+  . "$HOME/.atuin/bin/env"
+fi
+if [ -f "$HOME"/.local/share/bash-completion/completions/deno.bash ]; then
+  source "$HOME"/.local/share/bash-completion/completions/deno.bash
+fi
